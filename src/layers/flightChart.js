@@ -5,22 +5,28 @@ import React from "react";
 
 function getFlightData() {
   const flightsLocal = localStorage.getItem("flights");
-  const currentFlightCount = JSON.parse(flightsLocal);
-  let HCflightsData = [];
-  Object.values(currentFlightCount).forEach((each) =>
-    HCflightsData.push(each.count)
-  );
+  if (flightsLocal) {
+    const currentFlightCount = JSON.parse(flightsLocal);
+    let HCflightsData = [];
+    Object.values(currentFlightCount).forEach((each) =>
+      HCflightsData.push(each.count)
+    );
 
-  return HCflightsData;
+    return HCflightsData;
+  }
 }
 
 function getFlightLabels() {
   let HCflightsLabels = [];
   const flightsLocal = localStorage.getItem("flights");
-  const currentFlightCount = JSON.parse(flightsLocal);
-  Object.keys(currentFlightCount).forEach((each) => HCflightsLabels.push(each));
+  if (flightsLocal) {
+    const currentFlightCount = JSON.parse(flightsLocal);
+    Object.keys(currentFlightCount).forEach((each) =>
+      HCflightsLabels.push(each)
+    );
 
-  return HCflightsLabels;
+    return HCflightsLabels;
+  }
 }
 
 const optionsRoute = {
