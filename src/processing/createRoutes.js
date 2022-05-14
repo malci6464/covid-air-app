@@ -31,9 +31,17 @@ export async function createRoutes(res, selectedAirport) {
       ? (each.count = currentFlightCount[each.from.name].count)
       : (each.count = 1)
   );
-  localStorage.setItem("flights", JSON.stringify(simplifiedRoutes));
 
-  return simplifiedRoutes;
+  //make data for chart
+  let chartRoutes = [];
+  let chartLabels = [];
+  simplifiedRoutes.map((each) => {
+    const c1 = chartRoutes.push(each.count);
+    const c2 = chartLabels.push(each.from.name);
+    return c1 + c2;
+  });
+
+  return [simplifiedRoutes, chartRoutes, chartLabels];
 }
 
 export async function fetchRoutes(airport) {

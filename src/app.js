@@ -27,6 +27,7 @@ import {
 } from "./processing/createRoutes";
 import { CovidChart } from "./layers/covidChart";
 import { FlightChart } from "./layers/flightChart";
+import { ChildComponent } from "./ChildComponent";
 
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -39,6 +40,9 @@ const MAP_STYLE =
 
 export default function App() {
   const [airportsValue, setAirportsValue] = React.useState("please select");
+
+  const [isFlightData, setIsFlightData] = useState(null);
+
   const [routesData, setRoutesData] = useState(null);
   const [viewState, setViewState] = useState({
     longitude: 10,
@@ -72,8 +76,12 @@ export default function App() {
   async function handleChange(event) {
     setAirportsValue(event.target.value);
     let fetch = await fetchRoutes(event.target.value);
-    let currRoutes = createRoutes(fetch, event.target.value);
-    setRoutesData(currRoutes);
+    let [simplifiedRoutes, chartRoutes, chartLabels] = await createRoutes(
+      fetch,
+      event.target.value
+    );
+    setRoutesData(simplifiedRoutes);
+    setIsFlightData([chartRoutes, chartLabels]);
 
     let res = findAirCos(event.target.value);
     setViewState(res);
@@ -82,11 +90,15 @@ export default function App() {
   async function handleChange2(airportVal) {
     setAirportsValue(airportVal);
     let fetch = await fetchRoutes(airportVal);
-    let currRoutes = createRoutes(fetch, airportVal);
-    setRoutesData(currRoutes);
+    let [simplifiedRoutes, chartRoutes, chartLabels] = await createRoutes(
+      fetch,
+      airportVal
+    );
+    setRoutesData(simplifiedRoutes);
+    setIsFlightData([chartRoutes, chartLabels]);
 
-    let res = findAirCos(airportVal);
-    setViewState(res);
+    let res2 = findAirCos(airportVal);
+    setViewState(res2);
   }
 
   // // build dropdown
@@ -175,7 +187,7 @@ export default function App() {
               display: showHCroutes ? "block" : "none",
             }}
           >
-            <FlightChart />
+            <FlightChart toFlightChart={isFlightData} />
           </div>
         </div>
       </DeckGL>
