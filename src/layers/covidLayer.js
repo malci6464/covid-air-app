@@ -4,6 +4,30 @@ import { scaleLinear, scaleThreshold } from "d3-scale";
 import { europeanCountries } from "../dataFiles/countryList";
 import { useState, createContext } from "react";
 
+//todo - remove local storage - send data to parent - then send props into covd chart
+
+//use to build dropdown
+export let listOfC19Stats = {
+  active: "Active cases",
+  activePerOneMillion: "Active cases per million",
+  cases: "Cumulative cases",
+  casesPerOneMillion: "Cumulative per million",
+  critical: "Currently critical",
+  criticalPerOneMillion: "Critical per million",
+  deaths: "Cumulative deaths",
+  deathsPerOneMillion: "Deaths per million",
+  recovered: "Recovered cases",
+  recoveredPerOneMillion: "Recovered cases per million",
+  tests: "Tests taken total",
+  testsPerOneMillion: "Tests taken per million",
+  todayCases: "Cases today",
+  todayDeaths: "Deaths today",
+  todayRecovered: "Recovered today",
+};
+
+export const c19Keys = Object.keys(listOfC19Stats);
+console.log(listOfC19Stats["active"]);
+
 let clist = "";
 europeanCountries.forEach((each) => (clist = clist + each + ","));
 const C19_base = `https://corona.lmao.ninja/v2/countries/${clist}?yesterday`;

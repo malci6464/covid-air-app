@@ -18,16 +18,18 @@ import { FlightPositionLayer } from "./layers/flightPositionLayer";
 import { findAirCos } from "./processing/findCos";
 import { airportIconLayerProps } from "./layers/airportIconLayer";
 import { airportTextLayerProps } from "./layers/airportTextLayer";
-import { geoLayer } from "./layers/covidLayer";
+import { geoLayer, listOfC19Stats, c19Keys } from "./layers/covidLayer";
 import { flightArcsProps } from "./layers/routesLayer";
 import {
   createRoutes,
   fetchRoutes,
   maxFlightCount,
   airportCount,
+  loading,
 } from "./processing/createRoutes";
 import { CovidChart } from "./layers/covidChart";
 import { FlightChart } from "./layers/flightChart";
+import { style } from "d3";
 
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -40,6 +42,7 @@ const MAP_STYLE =
 
 export default function App() {
   const [airportsValue, setAirportsValue] = React.useState("please select");
+  const [covidValue, setCovidValue] = React.useState("please select");
 
   const [isFlightData, setIsFlightData] = useState(null);
 
@@ -79,6 +82,12 @@ export default function App() {
 
   async function handleChange2(airportVal) {
     await buildDF(airportVal);
+  }
+
+  async function handleCovidChange(event) {
+    // set data
+    setCovidValue(event.target.value);
+    //call covid api
   }
 
   async function buildDF(airportVal) {
@@ -148,6 +157,22 @@ export default function App() {
             </label>
           </form>
 
+          <form>
+            <label className={styles.def}>
+              Select Covid-19 statistic
+              <select value={covidValue} onChange={handleCovidChange}>
+                <option key={"test"} value={"Please select statistic"}>
+                  {"Please select statistic"}
+                </option>
+                {c19Keys.map((keyVal) => (
+                  <option key={keyVal} value={listOfC19Stats[keyVal]}>
+                    {listOfC19Stats[keyVal]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </form>
+
           <p className={styles.def}>
             {maxFlightCount > 0
               ? "Max number of incoming flights: " +
@@ -167,7 +192,18 @@ export default function App() {
           <button className={styles.btn} onClick={handleMapChange}>
             Dark / light mode
           </button>
-
+          <div
+            style={{
+              maxWidth: 1600,
+              maxHeight: 200,
+              display: loading ? "block" : "none",
+            }}
+          >
+            <div className={styles.loader}>
+              <div className={styles.spinner}></div>
+            </div>{" "}
+            Waiting for data from the flights API
+          </div>
           <div
             style={{
               maxWidth: 1400,

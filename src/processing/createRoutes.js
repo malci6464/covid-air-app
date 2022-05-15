@@ -7,6 +7,7 @@ export let airportCount = 0;
 export let currentCoordinates = [];
 //route counts per airport - multiple objects/vals
 export let currentFlightCount = {};
+export let loading = false;
 
 export async function createRoutes(res, selectedAirport) {
   let simplifiedRoutes = [];
@@ -37,10 +38,7 @@ export async function createRoutes(res, selectedAirport) {
 }
 
 export async function fetchRoutes(airport) {
-  //convert username and passsword to env!!!!!!!!!!!!!
-  // requires airport code, unix times
-  //validate TODO
-  //optional start and end
+  loading = true;
   let end = parseInt(Date.now() / 1000);
   //let end = 1649967142;
   let buffer = 10000;
@@ -54,10 +52,13 @@ export async function fetchRoutes(airport) {
     .then((response) => response.json())
     .then((data) => (fetchedData = data));
   let flightChartData = await countRoutesPerAirport(fetchedData);
+  loading = false;
   return [fetchedData, flightChartData];
 }
 
 async function countRoutesPerAirport(data) {
+  loading = true;
+
   let routeCounts = {};
   const filteredData = await data.filter(
     (each) => each.estDepartureAirport !== null
@@ -79,6 +80,8 @@ async function countRoutesPerAirport(data) {
   airportCount = Object.keys(routeCounts).length;
   //used to colour scale routes
   currentFlightCount = routeCounts;
+  //set loading status
+  loading = false;
   return routeCounts;
 }
 
