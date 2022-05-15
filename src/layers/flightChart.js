@@ -2,33 +2,39 @@
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import React from "react";
+import airportCodes from "../dataFiles/airportsDF.json";
 
 export function FlightChart(props) {
-  console.log(props.toFlightChart);
+  if (props.toFlightChart !== null) {
+    let countSet = [];
+    let res = Object.values(props.toFlightChart).forEach((each) =>
+      countSet.push(each.count)
+    );
+    let nameSet = Object.keys(props.toFlightChart);
 
-  const optionsRoute = {
-    title: {
-      text: "Route Data",
-    },
-    legend: {
-      enabled: false,
-    },
-    yAxis: {
+    const optionsRoute = {
       title: {
-        text: "Flight count in last 7 days",
+        text: "Route Data",
       },
-    },
-    xAxis: {
-      categories: props.toFlightChart[1],
-      title: {
-        text: "Incoming airport",
+      legend: {
+        enabled: false,
       },
-      // labels: {
-      //     format: '<a href="{link}">{text}</a>'
-      // }
-    },
-    series: [{ type: "column", data: props.toFlightChart[0] }],
-  };
+      yAxis: {
+        title: {
+          text: "Flight count in last 7 days",
+        },
+      },
+      xAxis: {
+        categories: nameSet,
+        title: {
+          text: "Incoming airport: IATA code",
+        },
+      },
+      series: [{ type: "column", data: countSet }],
+    };
 
-  return <HighchartsReact highcharts={Highcharts} options={optionsRoute} />;
+    return <HighchartsReact highcharts={Highcharts} options={optionsRoute} />;
+  } else {
+    return null;
+  }
 }

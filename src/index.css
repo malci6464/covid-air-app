@@ -1,7 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap");
+
 * {
-  font-family: -apple-system, BlinkMacSystemFont, "Oxygen", "Ubuntu",
+  /* font-family: -apple-system, BlinkMacSystemFont, "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  font-family: "Trebuchet MS", sans-serif;
+  font-family: "Trebuchet MS", sans-serif; */
+  font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

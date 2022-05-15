@@ -2,6 +2,7 @@ import { scaleThreshold } from "d3-scale";
 import airportCodes from "../dataFiles/airportsDF.json";
 
 export let maxFlightCount = 0;
+export let airportCount = 0;
 //global store - refacror
 export let currentCoordinates = [];
 //route counts per airport - multiple objects/vals
@@ -32,16 +33,7 @@ export async function createRoutes(res, selectedAirport) {
       : (each.count = 1)
   );
 
-  //make data for chart
-  let chartRoutes = [];
-  let chartLabels = [];
-  simplifiedRoutes.map((each) => {
-    const c1 = chartRoutes.push(each.count);
-    const c2 = chartLabels.push(each.from.name);
-    return c1 + c2;
-  });
-
-  return [simplifiedRoutes, chartRoutes, chartLabels];
+  return simplifiedRoutes;
 }
 
 export async function fetchRoutes(airport) {
@@ -61,8 +53,8 @@ export async function fetchRoutes(airport) {
   await fetch(url)
     .then((response) => response.json())
     .then((data) => (fetchedData = data));
-  countRoutesPerAirport(fetchedData);
-  return fetchedData;
+  let flightChartData = await countRoutesPerAirport(fetchedData);
+  return [fetchedData, flightChartData];
 }
 
 async function countRoutesPerAirport(data) {
@@ -83,8 +75,11 @@ async function countRoutesPerAirport(data) {
     each.count > maxVal ? (maxVal = each.count) : ""
   );
   maxFlightCount = maxVal;
+  console.log(routeCounts);
+  airportCount = Object.keys(routeCounts).length;
   //used to colour scale routes
   currentFlightCount = routeCounts;
+  return routeCounts;
 }
 
 export const COLOR_SCALE = scaleThreshold()

@@ -24,10 +24,10 @@ import {
   createRoutes,
   fetchRoutes,
   maxFlightCount,
+  airportCount,
 } from "./processing/createRoutes";
 import { CovidChart } from "./layers/covidChart";
 import { FlightChart } from "./layers/flightChart";
-import { ChildComponent } from "./ChildComponent";
 
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -72,36 +72,29 @@ export default function App() {
     }),
   ];
 
-  //refactor to single function - consider dom args
+  //handles dropdown arg
   async function handleChange(event) {
-    setAirportsValue(event.target.value);
-    let fetch = await fetchRoutes(event.target.value);
-    let [simplifiedRoutes, chartRoutes, chartLabels] = await createRoutes(
-      fetch,
-      event.target.value
-    );
-    setRoutesData(simplifiedRoutes);
-    setIsFlightData([chartRoutes, chartLabels]);
-
-    let res = findAirCos(event.target.value);
-    setViewState(res);
+    await buildDF(event.target.value);
   }
 
   async function handleChange2(airportVal) {
-    setAirportsValue(airportVal);
-    let fetch = await fetchRoutes(airportVal);
-    let [simplifiedRoutes, chartRoutes, chartLabels] = await createRoutes(
-      fetch,
-      airportVal
-    );
-    setRoutesData(simplifiedRoutes);
-    setIsFlightData([chartRoutes, chartLabels]);
+    await buildDF(airportVal);
+  }
 
+  async function buildDF(airportVal) {
+    setAirportsValue(airportVal);
+    let [fetch, flightChart] = await fetchRoutes(airportVal);
+    let simplifiedRoutes = await createRoutes(fetch, airportVal);
+    setRoutesData(simplifiedRoutes);
+    //build chart data
+    setIsFlightData(flightChart);
+    // get co-oridnates
     let res2 = findAirCos(airportVal);
+    //move camera view
     setViewState(res2);
   }
 
-  // // build dropdown
+  // build dropdown
   let airportOptions = [];
   for (var i = 0; i < airportCodes.length; i++) {
     airportOptions.push({
@@ -137,11 +130,10 @@ export default function App() {
       >
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
         <div className={styles.menuBar}>
-          <h1 className={styles.test}>
-            Real time Covid-19 Air Traffic Dashboard for Europe
-          </h1>
+          <h1 className={styles.def}>Covid-19 Air Traffic Dashboard</h1>
+          <h3 className={styles.def}>Real time for Europe</h3>
           <form>
-            <label>
+            <label className={styles.def}>
               Pick an airport:
               <select value={airportsValue} onChange={handleChange}>
                 <option key={"test"} value={"Please select airport"}>
@@ -156,9 +148,14 @@ export default function App() {
             </label>
           </form>
 
-          <p>
-            Max number of incoming flights:{" "}
-            {maxFlightCount > 0 ? maxFlightCount : "No flights!"}
+          <p className={styles.def}>
+            {maxFlightCount > 0
+              ? "Max number of incoming flights: " +
+                maxFlightCount +
+                " from " +
+                airportCount +
+                " different airports"
+              : "No flights - Please select another airport! "}
           </p>
 
           <button className={styles.btn} onClick={handleshowHCcovid}>
