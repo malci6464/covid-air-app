@@ -2,7 +2,6 @@
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import React from "react";
-import airportCodes from "../dataFiles/airportsDF.json";
 
 export function FlightChart(props) {
   if (props.toFlightChart !== null) {

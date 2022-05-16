@@ -1,11 +1,11 @@
 //react libs
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { render } from "react-dom";
 
 //map libs
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
-import { IconLayer, TextLayer, ArcLayer } from "@deck.gl/layers";
+import { IconLayer, TextLayer, ArcLayer, GeoJsonLayer } from "@deck.gl/layers";
 
 //import data
 import airportCodes from "./dataFiles/airportsDF.json";
@@ -18,7 +18,7 @@ import { FlightPositionLayer } from "./layers/flightPositionLayer";
 import { findAirCos } from "./processing/findCos";
 import { airportIconLayerProps } from "./layers/airportIconLayer";
 import { airportTextLayerProps } from "./layers/airportTextLayer";
-import { geoLayer, listOfC19Stats, c19Keys } from "./layers/covidLayer";
+import { listOfC19Stats, c19Keys } from "./layers/covidLayer";
 import { flightArcsProps } from "./layers/routesLayer";
 import {
   createRoutes,
@@ -29,7 +29,10 @@ import {
 } from "./processing/createRoutes";
 import { CovidChart } from "./layers/covidChart";
 import { FlightChart } from "./layers/flightChart";
-import { style } from "d3";
+import { callCovidApi, selectData } from "./layers/covidLayer";
+import { geoLayerProps, getCountryId } from "./layers/covidRender";
+import euroGEO from "./dataFiles/europe.geojson";
+import { CovidRenderLayer } from "./layers/covidRenderLayer";
 
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -41,12 +44,12 @@ const MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 
 export default function App() {
-  const [airportsValue, setAirportsValue] = React.useState("please select");
-  const [covidValue, setCovidValue] = React.useState("please select");
-
-  const [isFlightData, setIsFlightData] = useState(null);
-
-  const [routesData, setRoutesData] = useState(null);
+  const [airportsValue, setAirportsValue] = useState("please select"); //ex: London Gatwick
+  const [covidValue, setCovidValue] = useState("please select"); // ex: cases per million
+  const [covidMapData, setCovidMapData] = useState(undefined); // api results
+  const [geoData, setGeoData] = useState(euroGEO);
+  const [isFlightData, setIsFlightData] = useState(null); // api results
+  const [routesData, setRoutesData] = useState(null); // api results
   const [viewState, setViewState] = useState({
     longitude: 10,
     latitude: 59,
@@ -54,12 +57,20 @@ export default function App() {
     maxZoom: 15,
     pitch: 30,
     bearing: 30,
-  });
+  }); //camera data
+
+  //init covid layer with default per million
 
   const layers = [
     //scengraph todo - filterout non europe, filter 0,0 clkump of flights
     FlightPositionLayer(),
-    geoLayer,
+    CovidRenderLayer(),
+    // new GeoJsonLayer({
+    //   ...geoLayerProps,
+    //   data: geoData,
+    //   getFillColor: (each) => getCountryId(each),
+    //   // getFillColor: (each) => updateEachCountry(each, covidMapData), //colour defined by covid levels
+    // }),
     new ArcLayer({
       ...flightArcsProps,
       data: routesData,
@@ -75,19 +86,36 @@ export default function App() {
     }),
   ];
 
-  //handles dropdown arg
+  //handles dropdown arg - routes
   async function handleChange(event) {
     await buildDF(event.target.value);
   }
 
+  //handles click -routes
   async function handleChange2(airportVal) {
     await buildDF(airportVal);
   }
 
-  async function handleCovidChange(event) {
-    // set data
-    setCovidValue(event.target.value);
-    //call covid api
+  // async function getCovid19() {
+  //   await callCovidApi();
+  //   await selectData("activePerOneMillion");
+  // }
+
+  async function handleCovidChange(eventVal) {
+    //   // set param data
+    //   setCovidValue(eventVal);
+    //   setGeoData(null);
+    //   //call covid api
+    //   if (apiCallCount === 0) {
+    //     let apiResults = await callCovidApi("activePerOneMillion");
+    //     setCovidMapData(apiResults);
+    //     apiCallCount++;
+    //   }
+    //   setGeoData(euroGEO);
+    //   let res = await getCountryId(geoData, covidMapData);
+    //   //call render layer
+    //   //send to chart
+    //   //return apiResults;
   }
 
   async function buildDF(airportVal) {
@@ -111,6 +139,8 @@ export default function App() {
       value: airportCodes[i].ident,
     });
   }
+
+  // vars and functions to handle charts logic
   const [showHCcovid, setshowHCcovid] = useState(false);
   const handleshowHCcovid = () => setshowHCcovid(!showHCcovid);
 

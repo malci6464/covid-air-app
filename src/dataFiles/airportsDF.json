@@ -78,7 +78,7 @@
   },
   {
     "ident": "EDDF",
-    "name": "Frankfurt am Main Airport",
+    "name": "Frankfurt Main Airport",
     "continent": "EU",
     "iso_country": "DE",
     "iso_region": "DE-HE",
@@ -265,7 +265,7 @@
   },
   {
     "ident": "EGAC",
-    "name": "George Best Belfast City Airport",
+    "name": "Belfast City Airport",
     "continent": "EU",
     "iso_country": "GB",
     "iso_region": "GB-NIR",
@@ -298,7 +298,7 @@
   },
   {
     "ident": "EGCN",
-    "name": "Robin Hood Doncaster Sheffield Airport",
+    "name": "Sheffield Airport",
     "continent": "EU",
     "iso_country": "GB",
     "iso_region": "GB-ENG",
@@ -331,7 +331,7 @@
   },
   {
     "ident": "EGGP",
-    "name": "Liverpool John Lennon Airport",
+    "name": "Liverpool Airport",
     "continent": "EU",
     "iso_country": "GB",
     "iso_region": "GB-ENG",
@@ -639,7 +639,7 @@
   },
   {
     "ident": "ENBO",
-    "name": "BodÃƒÂ¸ Airport",
+    "name": "Boda Airport",
     "continent": "EU",
     "iso_country": "NO",
     "iso_region": "NO-18",
@@ -672,7 +672,7 @@
   },
   {
     "ident": "ENTC",
-    "name": "TromsÃƒÂ¸ Airport",
+    "name": "Tromso Airport",
     "continent": "EU",
     "iso_country": "NO",
     "iso_region": "NO-19",
@@ -683,7 +683,7 @@
   },
   {
     "ident": "ENVA",
-    "name": "Trondheim Airport VÃƒÂ¦rnes",
+    "name": "Trondheim Airport",
     "continent": "EU",
     "iso_country": "NO",
     "iso_region": "NO-17",
@@ -749,7 +749,7 @@
   },
   {
     "ident": "EPPO",
-    "name": "PoznaÃ…Â„-Ã…Âawica Airport",
+    "name": "Poznawica Airport",
     "continent": "EU",
     "iso_country": "PL",
     "iso_region": "PL-WP",
@@ -771,7 +771,7 @@
   },
   {
     "ident": "EPWR",
-    "name": "Copernicus WrocÃ…Â‚aw Airport",
+    "name": "Copernicus Warsaw Airport",
     "continent": "EU",
     "iso_country": "PL",
     "iso_region": "PL-DS",
@@ -793,7 +793,7 @@
   },
   {
     "ident": "ESMS",
-    "name": "MalmÃƒÂ¶ Sturup Airport",
+    "name": "Malmo Sturup Airport",
     "continent": "EU",
     "iso_country": "SE",
     "iso_region": "SE-M",
@@ -804,7 +804,7 @@
   },
   {
     "ident": "ESPA",
-    "name": "LuleÃƒÂ¥ Airport",
+    "name": "Lule Airport",
     "continent": "EU",
     "iso_country": "SE",
     "iso_region": "SE-BD",
@@ -903,7 +903,7 @@
   },
   {
     "ident": "LATI",
-    "name": "Tirana International Airport Mother Teresa",
+    "name": "Tirana International Airport",
     "continent": "EU",
     "iso_country": "AL",
     "iso_region": "AL-11",
@@ -1057,7 +1057,7 @@
   },
   {
     "ident": "LFLL",
-    "name": "Lyon Saint-ExupÃƒÂ©ry Airport",
+    "name": "Lyon Airport",
     "continent": "EU",
     "iso_country": "FR",
     "iso_region": "FR-ARA",
@@ -1079,7 +1079,7 @@
   },
   {
     "ident": "LFMN",
-    "name": "Nice-CÃƒÂ´te d'Azur Airport",
+    "name": "Nice-Cote d'Azur Airport",
     "continent": "EU",
     "iso_country": "FR",
     "iso_region": "FR-PAC",
@@ -1178,7 +1178,7 @@
   },
   {
     "ident": "LIBD",
-    "name": "Bari Karol WojtyÃ…Â‚a Airport",
+    "name": "Bari Karol Airport",
     "continent": "EU",
     "iso_country": "IT",
     "iso_region": "IT-75",
@@ -1200,7 +1200,7 @@
   },
   {
     "ident": "LICJ",
-    "name": "FalconeÃ¢Â€Â“Borsellino Airport",
+    "name": "Falcone Borsellino Airport",
     "continent": "EU",
     "iso_country": "IT",
     "iso_region": "IT-82",

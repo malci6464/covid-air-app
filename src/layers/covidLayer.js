@@ -1,10 +1,4 @@
-import euroGEO from "../dataFiles/europe.geojson";
-import { GeoJsonLayer } from "@deck.gl/layers";
-import { scaleLinear, scaleThreshold } from "d3-scale";
 import { europeanCountries } from "../dataFiles/countryList";
-import { useState, createContext } from "react";
-
-//todo - remove local storage - send data to parent - then send props into covd chart
 
 //use to build dropdown
 export let listOfC19Stats = {
@@ -24,85 +18,51 @@ export let listOfC19Stats = {
   todayDeaths: "Deaths today",
   todayRecovered: "Recovered today",
 };
-
+//used for easy parsing of object
 export const c19Keys = Object.keys(listOfC19Stats);
-console.log(listOfC19Stats["active"]);
 
+//definitions for colour scaling
+export let c19max = 0; //raw default
+export let c19min = 0; //not updated
+
+//filer vars
+let apiCallCount = 0;
+export let res = null;
+export let c19data = [];
+
+//add all countries as param to api call endpoint
 let clist = "";
 europeanCountries.forEach((each) => (clist = clist + each + ","));
+// novel covid api base endpoint
 const C19_base = `https://corona.lmao.ninja/v2/countries/${clist}?yesterday`;
 
-let c19max = 500000;
-let c19min = 0;
-
-//init
-let res = callCovidApi();
-
-function getCountryId(val) {
-  let country = val.properties.NAME;
-  let cs = 0;
-  let rez = res.map((each) =>
-    each.country === country ? (cs = each.cases) : ""
-  );
-  return c19Scale(cs);
-}
-
-const c19Scale = scaleLinear()
-  .domain([100000, c19max])
-  .range([
-    [0, 0, 0], // <= the lightest shade we want
-    [255, 0, 0],
-  ]);
-
-function getCovid(inputData) {
-  let temp = [];
-
+export function selectData(inputVal) {
   //select cases data
-  inputData.forEach((each) =>
-    temp.push({ country: each.country, cases: each.activePerOneMillion })
+  res.forEach((each) =>
+    c19data.push({ country: each.country, cases: each[inputVal] })
   );
-
-  //track limit
-  inputData.forEach((each) =>
-    each.activePerOneMillion > c19max ? (c19max = each.activePerOneMillion) : ""
-  );
-
-  // add time stamp : lastUpdated
-  // add population for % figure
-  //add deaths - switcher logic
-  //add cumlative
-
-  localStorage.setItem("covid", JSON.stringify(temp));
-
-  return temp;
+  //set max
+  getMaxMin();
+  return c19data;
 }
 
-function callCovidApi() {
-  fetch(C19_base)
-    .then((response) => response.json())
-    .then((data) => (res = getCovid(data)));
+function getMaxMin() {
+  c19data.forEach((each) => (each.cases > c19max ? (c19max = each.cases) : ""));
 }
 
-export const geoLayer = new GeoJsonLayer({
-  id: "geojson",
-  data: euroGEO,
-  opacity: 0.4,
-  stroked: false,
-  filled: true,
-  extruded: true,
-  wireframe: true,
-  getFillColor: (f) => getCountryId(f), //colour defined by covid levels
-  getLineColor: [255, 255, 255],
-  getPolygonOffset: (f) => [222, 22],
-  pickable: true,
-});
+//callCovidApi()
+//selectData(val)
+//getMaxMin
 
-// export const covidDataContext = createContext();
-// export const covidDataProvider = (props) => {};
-// export function CovidData(newCovidData) {
-//   const [covidData, setCovidData] = useState(null);
-//   if (newCovidData !== undefined) {
-//     setCovidData(newCovidData);
-//   }
-//   return covidData;
-// }
+export async function callCovidApi() {
+  if (apiCallCount === 0) {
+    //call api
+    await fetch(C19_base)
+      .then((response) => response.json())
+      .then((data) => (res = data));
+    apiCallCount++;
+    return res;
+  } else {
+    return res;
+  }
+}
