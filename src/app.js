@@ -1,11 +1,11 @@
 //react libs
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { render } from "react-dom";
 
 //map libs
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
-import { IconLayer, TextLayer, ArcLayer, GeoJsonLayer } from "@deck.gl/layers";
+import { IconLayer, TextLayer, ArcLayer } from "@deck.gl/layers";
 
 //import data
 import airportCodes from "./dataFiles/airportsDF.json";
@@ -19,6 +19,8 @@ import { findAirCos } from "./processing/findCos";
 import { airportIconLayerProps } from "./layers/airportIconLayer";
 import { airportTextLayerProps } from "./layers/airportTextLayer";
 import { flightArcsProps } from "./layers/routesLayer";
+
+//routes processing
 import {
   createRoutes,
   fetchRoutes,
@@ -26,15 +28,19 @@ import {
   airportCount,
   loading,
 } from "./processing/createRoutes";
+
+//charts
 import { CovidChart } from "./layers/covidChart";
 import { FlightChart } from "./layers/flightChart";
 
+//covid processing
 import {
   c19Keys,
   CovidRenderLayer,
   listOfC19Stats,
 } from "./layers/covidRenderLayer";
 
+//map styles
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
 //dark
@@ -116,8 +122,7 @@ export default function App() {
         key === "deathsPerOneMillion" ? setDeaths1m(true) : setDeaths1m(false);
         key === "todayCases" ? setCases(true) : setCases(false);
         key === "todayDeaths" ? setDeaths(true) : setDeaths(false);
-
-        //update covid chart props
+        //props sent to single chart instance
       }
     }
   }
@@ -162,6 +167,7 @@ export default function App() {
 
   return (
     <div>
+      {/* deck layers */}
       <DeckGL
         layers={[layers]}
         viewState={viewState}
@@ -170,9 +176,13 @@ export default function App() {
         // getTooltip={getTooltip}
       >
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
+
+        {/* titles */}
         <div className={styles.menuBar}>
           <h1 className={styles.def}>Covid-19 Air Traffic Dashboard</h1>
           <h3 className={styles.def}>Real time for Europe</h3>
+
+          {/* route picker */}
           <form>
             <label className={styles.def}>
               Pick an airport:
@@ -189,6 +199,7 @@ export default function App() {
             </label>
           </form>
 
+          {/* covid picker */}
           <form>
             <label className={styles.def}>
               Select Covid-19 statistic
@@ -205,6 +216,7 @@ export default function App() {
             </label>
           </form>
 
+          {/* flight info bar */}
           <p className={styles.def}>
             {maxFlightCount > 0
               ? "Max number of incoming flights: " +
@@ -214,7 +226,7 @@ export default function App() {
                 " different airports"
               : "No flights - Please select another airport! "}
           </p>
-
+          {/* show hide charts */}
           <button className={styles.btn} onClick={handleshowHCcovid}>
             Covid Chart
           </button>
