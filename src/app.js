@@ -18,7 +18,6 @@ import { FlightPositionLayer } from "./layers/flightPositionLayer";
 import { findAirCos } from "./processing/findCos";
 import { airportIconLayerProps } from "./layers/airportIconLayer";
 import { airportTextLayerProps } from "./layers/airportTextLayer";
-import { listOfC19Stats, c19Keys } from "./layers/covidLayer";
 import { flightArcsProps } from "./layers/routesLayer";
 import {
   createRoutes,
@@ -29,10 +28,12 @@ import {
 } from "./processing/createRoutes";
 import { CovidChart } from "./layers/covidChart";
 import { FlightChart } from "./layers/flightChart";
-import { callCovidApi, selectData } from "./layers/covidLayer";
-import { geoLayerProps, getCountryId } from "./layers/covidRender";
-import euroGEO from "./dataFiles/europe.geojson";
-import { CovidRenderLayer } from "./layers/covidRenderLayer";
+
+import {
+  c19Keys,
+  CovidRenderLayer,
+  listOfC19Stats,
+} from "./layers/covidRenderLayer";
 
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -44,12 +45,16 @@ const MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 
 export default function App() {
-  const [airportsValue, setAirportsValue] = useState("please select"); //ex: London Gatwick
-  const [covidValue, setCovidValue] = useState("please select"); // ex: cases per million
-  const [covidMapData, setCovidMapData] = useState(undefined); // api results
-  const [geoData, setGeoData] = useState(euroGEO);
+  const [airportsValue, setAirportsValue] = useState(null); //ex: London Gatwick
   const [isFlightData, setIsFlightData] = useState(null); // api results
   const [routesData, setRoutesData] = useState(null); // api results
+  //covid dropdown state
+  const [covidValue, setCovidValue] = useState("activePerOneMillion");
+  const [showActive1m, setActive1m] = useState(true);
+  const [showDeaths1m, setDeaths1m] = useState(false);
+  const [showDeaths, setDeaths] = useState(false);
+  const [showCases, setCases] = useState(false);
+
   const [viewState, setViewState] = useState({
     longitude: 10,
     latitude: 59,
@@ -59,18 +64,23 @@ export default function App() {
     bearing: 30,
   }); //camera data
 
-  //init covid layer with default per million
-
   const layers = [
     //scengraph todo - filterout non europe, filter 0,0 clkump of flights
     FlightPositionLayer(),
-    CovidRenderLayer(),
-    // new GeoJsonLayer({
-    //   ...geoLayerProps,
-    //   data: geoData,
-    //   getFillColor: (each) => getCountryId(each),
-    //   // getFillColor: (each) => updateEachCountry(each, covidMapData), //colour defined by covid levels
-    // }),
+    // hardcoded to enable layer selction - using visible  deck.gl layer prop
+    // format layer(data prop, visible bool, unique id)
+    CovidRenderLayer(
+      "activePerOneMillion",
+      showActive1m,
+      "activePerOneMillion"
+    ),
+    CovidRenderLayer(
+      "deathsPerOneMillion",
+      showDeaths1m,
+      "deathsPerOneMillion"
+    ),
+    CovidRenderLayer("todayCases", showCases, "todayCases"),
+    CovidRenderLayer("todayDeaths", showDeaths, "todayDeaths"),
     new ArcLayer({
       ...flightArcsProps,
       data: routesData,
@@ -96,26 +106,20 @@ export default function App() {
     await buildDF(airportVal);
   }
 
-  // async function getCovid19() {
-  //   await callCovidApi();
-  //   await selectData("activePerOneMillion");
-  // }
+  function handleCovidChange(eventVal) {
+    for (const [key, value] of Object.entries(listOfC19Stats)) {
+      if (value === eventVal.target.value) {
+        //set current selected
+        setCovidValue(value);
+        //set state for layers
+        key === "activePerOneMillion" ? setActive1m(true) : setActive1m(false);
+        key === "deathsPerOneMillion" ? setDeaths1m(true) : setDeaths1m(false);
+        key === "todayCases" ? setCases(true) : setCases(false);
+        key === "todayDeaths" ? setDeaths(true) : setDeaths(false);
 
-  async function handleCovidChange(eventVal) {
-    //   // set param data
-    //   setCovidValue(eventVal);
-    //   setGeoData(null);
-    //   //call covid api
-    //   if (apiCallCount === 0) {
-    //     let apiResults = await callCovidApi("activePerOneMillion");
-    //     setCovidMapData(apiResults);
-    //     apiCallCount++;
-    //   }
-    //   setGeoData(euroGEO);
-    //   let res = await getCountryId(geoData, covidMapData);
-    //   //call render layer
-    //   //send to chart
-    //   //return apiResults;
+        //update covid chart props
+      }
+    }
   }
 
   async function buildDF(airportVal) {
@@ -160,8 +164,6 @@ export default function App() {
     <div>
       <DeckGL
         layers={[layers]}
-        //effects={effects}
-        // initialViewState={initialViewState}
         viewState={viewState}
         onViewStateChange={(e) => setViewState(e.viewState)}
         controller={true}
@@ -191,11 +193,11 @@ export default function App() {
             <label className={styles.def}>
               Select Covid-19 statistic
               <select value={covidValue} onChange={handleCovidChange}>
-                <option key={"test"} value={"Please select statistic"}>
-                  {"Please select statistic"}
-                </option>
                 {c19Keys.map((keyVal) => (
-                  <option key={keyVal} value={listOfC19Stats[keyVal]}>
+                  <option
+                    key={listOfC19Stats[keyVal]}
+                    value={listOfC19Stats[keyVal]}
+                  >
                     {listOfC19Stats[keyVal]}
                   </option>
                 ))}
@@ -216,7 +218,13 @@ export default function App() {
           <button className={styles.btn} onClick={handleshowHCcovid}>
             Covid Chart
           </button>
-          <button className={styles.btn} onClick={handleshowHCroutes}>
+          <button
+            className={styles.btn}
+            onClick={handleshowHCroutes}
+            style={{
+              display: routesData !== null ? "inline" : "none",
+            }}
+          >
             Routes Chart
           </button>
           <button className={styles.btn} onClick={handleMapChange}>
@@ -241,7 +249,7 @@ export default function App() {
               display: showHCcovid ? "block" : "none",
             }}
           >
-            <CovidChart />
+            <CovidChart caseType={covidValue} />
           </div>
           <div
             style={{
