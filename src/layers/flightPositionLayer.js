@@ -10,6 +10,8 @@ const ANIMATIONS = {
   "*": { speed: 1 },
 };
 
+export let apiLoading = false;
+
 export const DATA_INDEX = {
   UNIQUE_ID: 0,
   CALL_SIGN: 1,
@@ -49,6 +51,7 @@ export function FlightPositionLayer() {
   }
 
   useEffect(() => {
+    apiLoading = true;
     fetch(DATA_URL_AIR)
       .then((resp) => resp.json())
       .then((resp) => {
@@ -74,7 +77,7 @@ export function FlightPositionLayer() {
               (entry) => dataAsObj[entry[DATA_INDEX.UNIQUE_ID]] || entry
             );
           }
-
+          apiLoading = false;
           setData(filterres);
         }
       })
@@ -88,6 +91,8 @@ export function FlightPositionLayer() {
     return () => {
       clearTimeout(timer.nextTimeoutId);
       timer.id = null;
+      //cancel loading animation if error
+      apiLoading = false;
     };
   }, [timer]);
 

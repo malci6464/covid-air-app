@@ -14,7 +14,7 @@ import airportCodes from "./dataFiles/airportsDF.json";
 import styles from "./buttons.module.css";
 
 //layers
-import { FlightPositionLayer } from "./layers/flightPositionLayer";
+import { FlightPositionLayer, apiLoading } from "./layers/flightPositionLayer";
 import { findAirCos } from "./processing/findCos";
 import { airportIconLayerProps } from "./layers/airportIconLayer";
 import { airportTextLayerProps } from "./layers/airportTextLayer";
@@ -40,6 +40,12 @@ import {
   listOfC19Stats,
 } from "./layers/covidRenderLayer";
 
+//components - reusables
+import { LoadingAnimation } from "./components/loading";
+import { AppTitles } from "./components/titles";
+import { RoutesDropdown } from "./components/routesDropdown";
+import { CovidDropdown } from "./components/covidDropdown";
+
 //map styles
 const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
@@ -55,7 +61,7 @@ export default function App() {
   const [isFlightData, setIsFlightData] = useState(null); // api results
   const [routesData, setRoutesData] = useState(null); // api results
   //covid dropdown state
-  const [covidValue, setCovidValue] = useState("activePerOneMillion");
+  const [c19Stat, setC19Stat] = useState("activePerOneMillion");
   const [showActive1m, setActive1m] = useState(true);
   const [showDeaths1m, setDeaths1m] = useState(false);
   const [showDeaths, setDeaths] = useState(false);
@@ -94,60 +100,61 @@ export default function App() {
     //these layers included directly for direct handling of clicks
     new IconLayer({
       ...airportIconLayerProps,
-      onClick: (d) => handleChange2(d.object.name),
+      //onClick: (d) => handleChange2(d.object.name),
     }),
     new TextLayer({
       ...airportTextLayerProps,
-      onClick: (d) => handleChange2(d.object.name),
+      // onClick: (d) => handleChange2(d.object.name),
     }),
   ];
 
-  //handles dropdown arg - routes
-  async function handleChange(event) {
-    await buildDF(event.target.value);
-  }
+  // //handles dropdown arg - routes
+  // async function handleChange(event) {
+  //   await buildDF(event.target.value);
+  // }
 
   //handles click -routes
-  async function handleChange2(airportVal) {
-    await buildDF(airportVal);
-  }
+  // async function handleChange2(airportVal) {
+  //   await buildDF(airportVal);
+  // }
 
-  function handleCovidChange(eventVal) {
-    for (const [key, value] of Object.entries(listOfC19Stats)) {
-      if (value === eventVal.target.value) {
-        //set current selected
-        setCovidValue(value);
-        //set state for layers
-        key === "activePerOneMillion" ? setActive1m(true) : setActive1m(false);
-        key === "deathsPerOneMillion" ? setDeaths1m(true) : setDeaths1m(false);
-        key === "todayCases" ? setCases(true) : setCases(false);
-        key === "todayDeaths" ? setDeaths(true) : setDeaths(false);
-        //props sent to single chart instance
-      }
-    }
-  }
+  // function handleCovidChange(eventVal) {
+  //   for (const [key, value] of Object.entries(listOfC19Stats)) {
+  //     if (value === eventVal.target.value) {
+  //       //set current selected
+  //       setCovidValue(value);
+  //       //set state for layers
+  //       key === "activePerOneMillion" ? setActive1m(true) : setActive1m(false);
+  //       key === "deathsPerOneMillion" ? setDeaths1m(true) : setDeaths1m(false);
+  //       key === "todayCases" ? setCases(true) : setCases(false);
+  //       key === "todayDeaths" ? setDeaths(true) : setDeaths(false);
+  //       //props sent to single chart instance
+  //     }
+  //   }
+  // }
 
-  async function buildDF(airportVal) {
-    setAirportsValue(airportVal);
-    let [fetch, flightChart] = await fetchRoutes(airportVal);
-    let simplifiedRoutes = await createRoutes(fetch, airportVal);
-    setRoutesData(simplifiedRoutes);
-    //build chart data
-    setIsFlightData(flightChart);
-    // get co-oridnates
-    let res2 = findAirCos(airportVal);
-    //move camera view
-    setViewState(res2);
-  }
+  // async function buildDF(airportVal) {
+  //   setAirportsValue(airportVal);
+  //   // Routes;
+  //   let [fetch, flightChart] = await fetchRoutes(airportVal);
+  //   let simplifiedRoutes = await createRoutes(fetch, airportVal);
+  //   setRoutesData(simplifiedRoutes);
+  //   //build chart data
+  //   setIsFlightData(flightChart);
+  //   // get co-oridnates
+  //   let res2 = findAirCos(airportVal);
+  //   //move camera view
+  //   setViewState(res2);
+  // }
 
-  // build dropdown
-  let airportOptions = [];
-  for (var i = 0; i < airportCodes.length; i++) {
-    airportOptions.push({
-      label: airportCodes[i].name,
-      value: airportCodes[i].ident,
-    });
-  }
+  // // build dropdown
+  // let airportOptions = [];
+  // for (var i = 0; i < airportCodes.length; i++) {
+  //   airportOptions.push({
+  //     label: airportCodes[i].name,
+  //     value: airportCodes[i].ident,
+  //   });
+  // }
 
   // vars and functions to handle charts logic
   const [showHCcovid, setshowHCcovid] = useState(false);
@@ -156,6 +163,7 @@ export default function App() {
   const [showHCroutes, setshowHCroutes] = useState(false);
   const handleshowHCroutes = () => setshowHCroutes(!showHCroutes);
 
+  //make a component
   const [mapStyle, setMapStyle] = useState(MAP_STYLE);
   function handleMapChange() {
     if (mapStyle === MAP_STYLE_DARK) {
@@ -167,56 +175,29 @@ export default function App() {
 
   return (
     <div>
-      {/* deck layers */}
       <DeckGL
         layers={[layers]}
         viewState={viewState}
         onViewStateChange={(e) => setViewState(e.viewState)}
         controller={true}
-        // getTooltip={getTooltip}
       >
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
-
-        {/* titles */}
         <div className={styles.menuBar}>
-          <h1 className={styles.def}>Covid-19 Air Traffic Dashboard</h1>
-          <h3 className={styles.def}>Real time for Europe</h3>
+          <AppTitles />
+          <RoutesDropdown
+            setRoutesData={setRoutesData}
+            setIsFlightData={setIsFlightData}
+            setViewState={setViewState}
+          />
+          <CovidDropdown
+            setActive1m={setActive1m}
+            setDeaths1m={setDeaths1m}
+            setCases={setCases}
+            setDeaths={setDeaths}
+            setC19Stat={setC19Stat}
+          />
 
-          {/* route picker */}
-          <form>
-            <label className={styles.def}>
-              Pick an airport:
-              <select value={airportsValue} onChange={handleChange}>
-                <option key={"test"} value={"Please select airport"}>
-                  {"Please select airport"}
-                </option>
-                {airportOptions.map((option) => (
-                  <option key={option.label} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </form>
-
-          {/* covid picker */}
-          <form>
-            <label className={styles.def}>
-              Select Covid-19 statistic
-              <select value={covidValue} onChange={handleCovidChange}>
-                {c19Keys.map((keyVal) => (
-                  <option
-                    key={listOfC19Stats[keyVal]}
-                    value={listOfC19Stats[keyVal]}
-                  >
-                    {listOfC19Stats[keyVal]}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </form>
-
-          {/* flight info bar */}
+          {/* flight info bar  -> change to total*/}
           <p className={styles.def}>
             {maxFlightCount > 0
               ? "Max number of incoming flights: " +
@@ -242,18 +223,8 @@ export default function App() {
           <button className={styles.btn} onClick={handleMapChange}>
             Dark / light mode
           </button>
-          <div
-            style={{
-              maxWidth: 1600,
-              maxHeight: 200,
-              display: loading ? "block" : "none",
-            }}
-          >
-            <div className={styles.loader}>
-              <div className={styles.spinner}></div>
-            </div>{" "}
-            Waiting for data from the flights API
-          </div>
+          <LoadingAnimation />
+
           <div
             style={{
               maxWidth: 1400,
@@ -261,7 +232,7 @@ export default function App() {
               display: showHCcovid ? "block" : "none",
             }}
           >
-            <CovidChart caseType={covidValue} />
+            <CovidChart caseType={c19Stat} />
           </div>
           <div
             style={{

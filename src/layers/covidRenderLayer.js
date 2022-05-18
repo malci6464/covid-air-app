@@ -51,10 +51,8 @@ export function CovidRenderLayer(props, show, newId) {
   let c19min = 0; //not updated
 
   function getMax(data) {
-    console.log(show);
     const amounts = data.map((each) => each[props]);
     c19max = Math.max(...amounts);
-    console.log(c19max);
     setActivestate(true);
   }
 
