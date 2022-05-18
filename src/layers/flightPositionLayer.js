@@ -4,7 +4,7 @@ import { ScenegraphLayer } from "@deck.gl/mesh-layers";
 const DATA_URL_AIR = "https://opensky-network.org/api/states/all";
 const MODEL_URL =
   "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/scenegraph-layer/airplane.glb";
-const REFRESH_TIME = 6000;
+const REFRESH_TIME = 10000;
 
 const ANIMATIONS = {
   "*": { speed: 1 },

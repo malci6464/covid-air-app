@@ -9,6 +9,7 @@ import { IconLayer, TextLayer, ArcLayer } from "@deck.gl/layers";
 
 //import data
 import airportCodes from "./dataFiles/airportsDF.json";
+import { MAP_STYLE_STD } from "./dataFiles/mapStyles";
 
 //import css
 import styles from "./buttons.module.css";
@@ -45,19 +46,11 @@ import { LoadingAnimation } from "./components/loading";
 import { AppTitles } from "./components/titles";
 import { RoutesDropdown } from "./components/routesDropdown";
 import { CovidDropdown } from "./components/covidDropdown";
-
-//map styles
-const MAP_STYLE_LIGHT =
-  "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json";
-//dark
-const MAP_STYLE_DARK =
-  "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
-
-const MAP_STYLE =
-  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+import { C19Btn } from "./components/c19ChartBtn";
+import { FlightChartBtn } from "./components/routesChartBtn";
+import { SetMapBg } from "./components/mapStyle";
 
 export default function App() {
-  const [airportsValue, setAirportsValue] = useState(null); //ex: London Gatwick
   const [isFlightData, setIsFlightData] = useState(null); // api results
   const [routesData, setRoutesData] = useState(null); // api results
   //covid dropdown state
@@ -66,6 +59,7 @@ export default function App() {
   const [showDeaths1m, setDeaths1m] = useState(false);
   const [showDeaths, setDeaths] = useState(false);
   const [showCases, setCases] = useState(false);
+  const [mapStyle, setMapStyle] = useState(MAP_STYLE_STD);
 
   const [viewState, setViewState] = useState({
     longitude: 10,
@@ -108,29 +102,9 @@ export default function App() {
     }),
   ];
 
-  // //handles dropdown arg - routes
-  // async function handleChange(event) {
-  //   await buildDF(event.target.value);
-  // }
-
   //handles click -routes
   // async function handleChange2(airportVal) {
   //   await buildDF(airportVal);
-  // }
-
-  // function handleCovidChange(eventVal) {
-  //   for (const [key, value] of Object.entries(listOfC19Stats)) {
-  //     if (value === eventVal.target.value) {
-  //       //set current selected
-  //       setCovidValue(value);
-  //       //set state for layers
-  //       key === "activePerOneMillion" ? setActive1m(true) : setActive1m(false);
-  //       key === "deathsPerOneMillion" ? setDeaths1m(true) : setDeaths1m(false);
-  //       key === "todayCases" ? setCases(true) : setCases(false);
-  //       key === "todayDeaths" ? setDeaths(true) : setDeaths(false);
-  //       //props sent to single chart instance
-  //     }
-  //   }
   // }
 
   // async function buildDF(airportVal) {
@@ -146,32 +120,6 @@ export default function App() {
   //   //move camera view
   //   setViewState(res2);
   // }
-
-  // // build dropdown
-  // let airportOptions = [];
-  // for (var i = 0; i < airportCodes.length; i++) {
-  //   airportOptions.push({
-  //     label: airportCodes[i].name,
-  //     value: airportCodes[i].ident,
-  //   });
-  // }
-
-  // vars and functions to handle charts logic
-  const [showHCcovid, setshowHCcovid] = useState(false);
-  const handleshowHCcovid = () => setshowHCcovid(!showHCcovid);
-
-  const [showHCroutes, setshowHCroutes] = useState(false);
-  const handleshowHCroutes = () => setshowHCroutes(!showHCroutes);
-
-  //make a component
-  const [mapStyle, setMapStyle] = useState(MAP_STYLE);
-  function handleMapChange() {
-    if (mapStyle === MAP_STYLE_DARK) {
-      return setMapStyle(MAP_STYLE);
-    } else {
-      return setMapStyle(MAP_STYLE_DARK);
-    }
-  }
 
   return (
     <div>
@@ -205,44 +153,19 @@ export default function App() {
                 " from " +
                 airportCount +
                 " different airports"
-              : "No flights - Please select another airport! "}
+              : "No flights available -  Please select another airport! "}
           </p>
           {/* show hide charts */}
-          <button className={styles.btn} onClick={handleshowHCcovid}>
+          {/* <button className={styles.btn} onClick={handleshowHCcovid}>
             Covid Chart
-          </button>
-          <button
-            className={styles.btn}
-            onClick={handleshowHCroutes}
-            style={{
-              display: routesData !== null ? "inline" : "none",
-            }}
-          >
-            Routes Chart
-          </button>
-          <button className={styles.btn} onClick={handleMapChange}>
+          </button> */}
+          <C19Btn c19Stat={c19Stat} />
+          <FlightChartBtn isFlightData={isFlightData} />
+          <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />
+          {/* <button className={styles.btn} onClick={handleMapChange}>
             Dark / light mode
-          </button>
+          </button> */}
           <LoadingAnimation />
-
-          <div
-            style={{
-              maxWidth: 1400,
-              maxHeight: 800,
-              display: showHCcovid ? "block" : "none",
-            }}
-          >
-            <CovidChart caseType={c19Stat} />
-          </div>
-          <div
-            style={{
-              maxWidth: 1400,
-              maxHeight: 800,
-              display: showHCroutes ? "block" : "none",
-            }}
-          >
-            <FlightChart toFlightChart={isFlightData} />
-          </div>
         </div>
       </DeckGL>
     </div>
