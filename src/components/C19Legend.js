@@ -13,6 +13,14 @@ export function C19Legend(props) {
         <p className={styles.def}>
           Max cases {props.currentC19List[props.c19Total]}
         </p>
+        <p
+          style={{
+            display: props.currentC19List[props.c19Total] > 0 ? "none" : "",
+          }}
+        >
+          {" "}
+          *** Unfortunately no data has been registered for today in Europe
+        </p>
       </div>
     </>
   );

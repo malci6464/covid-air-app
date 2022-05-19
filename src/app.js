@@ -170,6 +170,10 @@ export default function App() {
               setAirportsValue={setAirportsValue}
               airportsValue={airportsValue}
             />
+            <FlightInfoBar
+              totalFlights={totalFlights}
+              airportTotal={airportCount}
+            />
             <CovidDropdown
               setActive1m={setActive1m}
               setDeaths1m={setDeaths1m}
@@ -178,10 +182,7 @@ export default function App() {
               setC19Stat={setC19Stat}
               setC19Total={setC19Total}
             />
-            <FlightInfoBar
-              totalFlights={totalFlights}
-              airportTotal={airportCount}
-            />
+
             <C19Legend c19Total={c19Total} currentC19List={currentC19List} />
             <C19Btn c19Stat={c19Stat} />
             <FlightChartBtn isFlightData={isFlightData} />
