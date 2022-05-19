@@ -60,8 +60,6 @@ export function CovidRenderLayer(
   }
 
   async function updateMaxList(max) {
-    // let x = buildTotals({ name: props, count: max });
-    // let x = totalsList[props] === 0 ? (totalsList[props] = max) : "";
     let listCopy = currentC19List;
     listCopy[props] = max;
     setCurrentC19List(listCopy);

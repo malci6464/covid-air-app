@@ -79,10 +79,9 @@
 /* custom legend */
 
 .wrapper {
-  height: 20px;
+  height: 18px;
   width: 300px;
-  padding: 4px;
-  padding-bottom: 0;
+  padding-bottom: 0px;
   position: relative;
   overflow: hidden;
   color: white;

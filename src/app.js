@@ -56,7 +56,7 @@ export default function App() {
 
   //covid
   const [c19Stat, setC19Stat] = useState("activePerOneMillion");
-  const [currentC19Max, setCurrentC19Max] = useState(0);
+  const [c19Total, setC19Total] = useState("activePerOneMillion");
   const [currentC19List, setCurrentC19List] = useState({
     activePerOneMillion: 0,
     deathsPerOneMillion: 0,
@@ -84,7 +84,7 @@ export default function App() {
     //scengraph todo - filterout non europe, filter 0,0 clkump of flights
     FlightPositionLayer(),
     // hardcoded to enable layer selction - using visible  deck.gl layer prop
-    // format layer(data prop, visible bool, unique id)
+    // format layer(data prop, visible bool, unique id, max list states)
     CovidRenderLayer(
       "activePerOneMillion",
       showActive1m,
@@ -179,12 +179,13 @@ export default function App() {
               setCases={setCases}
               setDeaths={setDeaths}
               setC19Stat={setC19Stat}
+              setC19Total={setC19Total}
             />
             <FlightInfoBar
               totalFlights={totalFlights}
               airportTotal={airportCount}
             />
-            <C19Legend c19Stat={c19Stat} currentC19List={currentC19List} />
+            <C19Legend c19Total={c19Total} currentC19List={currentC19List} />
             <C19Btn c19Stat={c19Stat} />
             <FlightChartBtn isFlightData={isFlightData} />
             <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />

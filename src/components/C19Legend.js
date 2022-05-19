@@ -11,7 +11,7 @@ export function C19Legend(props) {
       <div className={styles.flex}>
         <p className={styles.def}>Min cases</p>
         <p className={styles.def}>
-          Max cases {props.currentC19List[props.c19Stat]}
+          Max cases {props.currentC19List[props.c19Total]}
         </p>
       </div>
     </>

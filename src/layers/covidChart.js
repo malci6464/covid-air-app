@@ -4,7 +4,7 @@ import HighchartsReact from "highcharts-react-official";
 import React, { useState, useEffect } from "react";
 import { C19_base } from "./covidRenderLayer";
 
-export function CovidChart(props, setCurrentC19MaxCall) {
+export function CovidChart(props) {
   let deathsArr = [];
   let casesArr = [];
   let cases1mArr = [];
