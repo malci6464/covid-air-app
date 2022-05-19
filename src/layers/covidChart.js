@@ -4,7 +4,7 @@ import HighchartsReact from "highcharts-react-official";
 import React, { useState, useEffect } from "react";
 import { C19_base } from "./covidRenderLayer";
 
-export function CovidChart(props) {
+export function CovidChart(props, setCurrentC19MaxCall) {
   let deathsArr = [];
   let casesArr = [];
   let cases1mArr = [];
@@ -47,18 +47,30 @@ export function CovidChart(props) {
   //select correct dataframe
   function getData() {
     if (props.caseType === "Cases today") {
+      // let c19max = Math.max(...cases);
+      // console.log(c19max);
+      // setCurrentC19MaxCall(c19max);
       return cases;
     }
     if (props.caseType === "Deaths today") {
+      // let c19max = Math.max(deaths);
+      // console.log(c19max);
+      // setCurrentC19MaxCall(...c19max);
       return deaths;
     }
     if (
       props.caseType === "activePerOneMillion" ||
       props.caseType === "Active cases per million"
     ) {
+      // let c19max = Math.max(cases1m);
+      // console.log(cases1m);
+      // setCurrentC19MaxCall(...c19max);
       return cases1m;
     }
     if (props.caseType === "Deaths per million") {
+      // let c19max = Math.max(...deaths1m);
+      // console.log(c19max);
+      // setCurrentC19MaxCall(...c19max);
       return deaths1m;
     }
   }

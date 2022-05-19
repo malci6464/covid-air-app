@@ -25,14 +25,10 @@ import { flightArcsProps } from "./layers/routesLayer";
 import {
   createRoutes,
   fetchRoutes,
-  maxFlightCount,
   airportCount,
   loading,
+  totalFlights,
 } from "./processing/createRoutes";
-
-//charts
-import { CovidChart } from "./layers/covidChart";
-import { FlightChart } from "./layers/flightChart";
 
 //covid processing
 import {
@@ -41,7 +37,7 @@ import {
   listOfC19Stats,
 } from "./layers/covidRenderLayer";
 
-//components - reusables
+// import components for render
 import { LoadingAnimation } from "./components/loading";
 import { AppTitles } from "./components/titles";
 import { RoutesDropdown } from "./components/routesDropdown";
@@ -49,18 +45,32 @@ import { CovidDropdown } from "./components/covidDropdown";
 import { C19Btn } from "./components/c19ChartBtn";
 import { FlightChartBtn } from "./components/routesChartBtn";
 import { SetMapBg } from "./components/mapStyle";
+import { FlightInfoBar } from "./components/flighInfoBar";
+import { C19Legend } from "./components/C19Legend";
 
 export default function App() {
+  //flights
   const [isFlightData, setIsFlightData] = useState(null); // api results
   const [routesData, setRoutesData] = useState(null); // api results
-  //covid dropdown state
+  const [newRoute, setNewRoute] = useState(null);
+
+  //covid
   const [c19Stat, setC19Stat] = useState("activePerOneMillion");
+  const [currentC19Max, setCurrentC19Max] = useState(0);
+  const [currentC19List, setCurrentC19List] = useState({
+    activePerOneMillion: 0,
+    deathsPerOneMillion: 0,
+    todayCases: 0,
+    todayDeaths: 0,
+  });
   const [showActive1m, setActive1m] = useState(true);
   const [showDeaths1m, setDeaths1m] = useState(false);
   const [showDeaths, setDeaths] = useState(false);
   const [showCases, setCases] = useState(false);
-  const [mapStyle, setMapStyle] = useState(MAP_STYLE_STD);
 
+  //map
+  const [showMenu, setshowMenu] = useState(true);
+  const [mapStyle, setMapStyle] = useState(MAP_STYLE_STD);
   const [viewState, setViewState] = useState({
     longitude: 10,
     latitude: 59,
@@ -78,15 +88,31 @@ export default function App() {
     CovidRenderLayer(
       "activePerOneMillion",
       showActive1m,
-      "activePerOneMillion"
+      "activePerOneMillion",
+      setCurrentC19List,
+      currentC19List
     ),
     CovidRenderLayer(
       "deathsPerOneMillion",
       showDeaths1m,
-      "deathsPerOneMillion"
+      "deathsPerOneMillion",
+      setCurrentC19List,
+      currentC19List
     ),
-    CovidRenderLayer("todayCases", showCases, "todayCases"),
-    CovidRenderLayer("todayDeaths", showDeaths, "todayDeaths"),
+    CovidRenderLayer(
+      "todayCases",
+      showCases,
+      "todayCases",
+      setCurrentC19List,
+      currentC19List
+    ),
+    CovidRenderLayer(
+      "todayDeaths",
+      showDeaths,
+      "todayDeaths",
+      setCurrentC19List,
+      currentC19List
+    ),
     new ArcLayer({
       ...flightArcsProps,
       data: routesData,
@@ -94,11 +120,11 @@ export default function App() {
     //these layers included directly for direct handling of clicks
     new IconLayer({
       ...airportIconLayerProps,
-      //onClick: (d) => handleChange2(d.object.name),
+      onClick: (d) => setNewRoute(d.object.name),
     }),
     new TextLayer({
       ...airportTextLayerProps,
-      // onClick: (d) => handleChange2(d.object.name),
+      onClick: (d) => setNewRoute(d.object.name),
     }),
   ];
 
@@ -121,6 +147,8 @@ export default function App() {
   //   setViewState(res2);
   // }
 
+  const toggleMenu = () => setshowMenu(!showMenu);
+
   return (
     <div>
       <DeckGL
@@ -132,39 +160,35 @@ export default function App() {
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
         <div className={styles.menuBar}>
           <AppTitles />
-          <RoutesDropdown
-            setRoutesData={setRoutesData}
-            setIsFlightData={setIsFlightData}
-            setViewState={setViewState}
-          />
-          <CovidDropdown
-            setActive1m={setActive1m}
-            setDeaths1m={setDeaths1m}
-            setCases={setCases}
-            setDeaths={setDeaths}
-            setC19Stat={setC19Stat}
-          />
-
-          {/* flight info bar  -> change to total*/}
-          <p className={styles.def}>
-            {maxFlightCount > 0
-              ? "Max number of incoming flights: " +
-                maxFlightCount +
-                " from " +
-                airportCount +
-                " different airports"
-              : "No flights available -  Please select another airport! "}
-          </p>
-          {/* show hide charts */}
-          {/* <button className={styles.btn} onClick={handleshowHCcovid}>
-            Covid Chart
-          </button> */}
-          <C19Btn c19Stat={c19Stat} />
-          <FlightChartBtn isFlightData={isFlightData} />
-          <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />
-          {/* <button className={styles.btn} onClick={handleMapChange}>
-            Dark / light mode
-          </button> */}
+          <button className={styles.menuBtn} onClick={toggleMenu}>
+            Toggle menu
+          </button>
+          <div
+            style={{
+              display: showMenu ? "block" : "none",
+            }}
+          >
+            <RoutesDropdown
+              setRoutesData={setRoutesData}
+              setIsFlightData={setIsFlightData}
+              setViewState={setViewState}
+            />
+            <CovidDropdown
+              setActive1m={setActive1m}
+              setDeaths1m={setDeaths1m}
+              setCases={setCases}
+              setDeaths={setDeaths}
+              setC19Stat={setC19Stat}
+            />
+            <FlightInfoBar
+              totalFlights={totalFlights}
+              airportTotal={airportCount}
+            />
+            <C19Legend c19Stat={c19Stat} currentC19List={currentC19List} />
+            <C19Btn c19Stat={c19Stat} />
+            <FlightChartBtn isFlightData={isFlightData} />
+            <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />
+          </div>
           <LoadingAnimation />
         </div>
       </DeckGL>

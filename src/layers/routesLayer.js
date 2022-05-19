@@ -1,4 +1,4 @@
-import { maxFlightCount } from "../processing/createRoutes";
+import { totalFlights } from "../processing/createRoutes";
 import { scaleLinear } from "d3-scale";
 
 const flightRouteScale = scaleLinear()
@@ -11,7 +11,7 @@ const flightRouteScale = scaleLinear()
 function getArcSize(countVal) {
   let maxThickness = 6;
   let minThickness = 1;
-  let perc = countVal / maxFlightCount;
+  let perc = countVal / totalFlights;
   let res = perc * maxThickness;
   return res > minThickness ? res : minThickness;
 }

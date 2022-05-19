@@ -1,7 +1,7 @@
 import { scaleThreshold } from "d3-scale";
 import airportCodes from "../dataFiles/airportsDF.json";
 
-export let maxFlightCount = 0;
+export let totalFlights = 0;
 export let airportCount = 0;
 //global store - refacror
 export let currentCoordinates = [];
@@ -70,13 +70,11 @@ async function countRoutesPerAirport(data) {
           count: 1,
         })
   );
-  //get max val of all routes
-  let maxVal = 0;
-  Object.values(routeCounts).forEach((each) =>
-    each.count > maxVal ? (maxVal = each.count) : ""
+  //get total of all routes
+  Object.values(routeCounts).forEach(
+    (each) => (totalFlights = totalFlights + each.count)
   );
-  maxFlightCount = maxVal;
-  console.log(routeCounts);
+
   airportCount = Object.keys(routeCounts).length;
   //used to colour scale routes
   currentFlightCount = routeCounts;

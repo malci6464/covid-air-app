@@ -13,23 +13,23 @@ export let listOfC19Stats = {
 };
 
 // full list of other possible props to use
-let listOfC19StatsFull = {
-  active: "Active cases",
-  activePerOneMillion: "Active cases per million",
-  cases: "Cumulative cases",
-  casesPerOneMillion: "Cumulative per million",
-  critical: "Currently critical",
-  criticalPerOneMillion: "Critical per million",
-  deaths: "Cumulative deaths",
-  deathsPerOneMillion: "Deaths per million",
-  recovered: "Recovered cases",
-  recoveredPerOneMillion: "Recovered cases per million",
-  tests: "Tests taken total",
-  testsPerOneMillion: "Tests taken per million",
-  todayCases: "Cases today",
-  todayDeaths: "Deaths today",
-  todayRecovered: "Recovered today",
-};
+// let listOfC19StatsFull = {
+//   active: "Active cases",
+//   activePerOneMillion: "Active cases per million",
+//   cases: "Cumulative cases",
+//   casesPerOneMillion: "Cumulative per million",
+//   critical: "Currently critical",
+//   criticalPerOneMillion: "Critical per million",
+//   deaths: "Cumulative deaths",
+//   deathsPerOneMillion: "Deaths per million",
+//   recovered: "Recovered cases",
+//   recoveredPerOneMillion: "Recovered cases per million",
+//   tests: "Tests taken total",
+//   testsPerOneMillion: "Tests taken per million",
+//   todayCases: "Cases today",
+//   todayDeaths: "Deaths today",
+//   todayRecovered: "Recovered today",
+// };
 
 //used for easy parsing of object
 export const c19Keys = Object.keys(listOfC19Stats);
@@ -40,11 +40,14 @@ europeanCountries.forEach((each) => (clist = clist + each + ","));
 // novel covid api base endpoint
 export const C19_base = `https://corona.lmao.ninja/v2/countries/${clist}?yesterday`;
 
-export function CovidRenderLayer(props, show, newId) {
+export function CovidRenderLayer(
+  props,
+  show,
+  newId,
+  setCurrentC19List,
+  currentC19List
+) {
   const [dataApi, setDataApi] = useState(null);
-  const [currentC19, setcurrentC19] = useState(null);
-  const [selected, setSelected] = useState("activePerOneMillion");
-  const [activeState, setActivestate] = useState(false);
 
   //definitions for colour scaling
   let c19max = 10000; //raw default
@@ -53,7 +56,15 @@ export function CovidRenderLayer(props, show, newId) {
   function getMax(data) {
     const amounts = data.map((each) => each[props]);
     c19max = Math.max(...amounts);
-    setActivestate(true);
+    updateMaxList(c19max);
+  }
+
+  async function updateMaxList(max) {
+    // let x = buildTotals({ name: props, count: max });
+    // let x = totalsList[props] === 0 ? (totalsList[props] = max) : "";
+    let listCopy = currentC19List;
+    listCopy[props] = max;
+    setCurrentC19List(listCopy);
   }
 
   // find country and assign RGB dependent on case count
@@ -65,12 +76,10 @@ export function CovidRenderLayer(props, show, newId) {
   function getColour(cases) {
     //todo - make dyncamic - and reinstate max
     let col = (cases / c19max) * 255;
-    console.log("col", cases / c19max);
     if (col > 255) {
       col = 255;
     }
     let colour = [Math.round(col), 0, 0];
-    console.log(colour);
     return colour;
   }
   // find country and assign RGB dependent on case count

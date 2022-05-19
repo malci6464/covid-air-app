@@ -10,8 +10,16 @@
   margin-right: 4px;
 }
 
+@media only screen and (max-width: 620px) {
+  .title {
+    font-size: 24px;
+  }
+}
+
 .menuBar {
-  padding: 12px;
+  transition: opacity 2.5s ease-in;
+  opacity: 1;
+  padding: 8px;
   z-index: 10;
   background: rgb(2, 0, 36);
   background: linear-gradient(
@@ -20,6 +28,24 @@
     rgba(99, 99, 187, 1) 0%,
     rgba(0, 212, 255, 1) 100%
   );
+}
+
+@media only screen and (max-width: 620px) {
+  .menuBar {
+    padding-top: 40px;
+  }
+}
+
+.menuBtn {
+  border-radius: 6px;
+  padding: 6px;
+  position: absolute;
+  top: 25px;
+  right: 25px;
+}
+
+.hide {
+  opacity: 0;
 }
 
 .loader {
@@ -48,4 +74,38 @@
     opacity: 1;
     transform: rotate(359deg);
   }
+}
+
+/* custom legend */
+
+.wrapper {
+  height: 20px;
+  width: 300px;
+  padding: 4px;
+  padding-bottom: 0;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.progress {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  background: rgb(82, 68, 68);
+  background: linear-gradient(
+    90deg,
+    rgba(82, 68, 68, 0.8) 9%,
+    rgba(255, 0, 0, 0.8) 100%
+  );
+  animation: fill-bar 3s ease-in-out;
+  animation-fill-mode: both;
+}
+
+.flex {
+  display: flex;
+  width: 300px;
+  padding: 4px;
+  padding-top: 0px;
+  justify-content: space-between;
 }

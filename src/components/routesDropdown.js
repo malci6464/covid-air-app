@@ -20,7 +20,7 @@ export function RoutesDropdown({
     "Select an incoming route"
   ); //ex: London Gatwick
   const [newRoutesData, setNewRoutesData] = useState(null);
-
+  // console.log(newRoute);
   //handles dropdown arg - routes
   async function handleChange(event) {
     await buildDF(event.target.value);

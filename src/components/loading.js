@@ -27,7 +27,8 @@ export function LoadingAnimation() {
           display: apiLoading ? "block" : "none",
         }}
       >
-        Live flight locations loading from api
+        Live flight locations loading from api <br></br> Zoom in close to see
+        animation
       </p>
     </div>
   );
