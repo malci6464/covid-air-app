@@ -1,41 +1,33 @@
 //react libs
 import React, { useState } from "react";
 import { render } from "react-dom";
-
-//map libs
 import { StaticMap } from "react-map-gl";
 import DeckGL from "@deck.gl/react";
 import { IconLayer, TextLayer, ArcLayer } from "@deck.gl/layers";
 
 //import data
-import airportCodes from "./dataFiles/airportsDF.json";
 import { MAP_STYLE_STD } from "./dataFiles/mapStyles";
 
 //import css
 import styles from "./buttons.module.css";
 
 //layers
-import { FlightPositionLayer, apiLoading } from "./layers/flightPositionLayer";
-import { findAirCos } from "./processing/findCos";
+import { FlightPositionLayer } from "./layers/flightPositionLayer";
 import { airportIconLayerProps } from "./layers/airportIconLayer";
 import { airportTextLayerProps } from "./layers/airportTextLayer";
 import { flightArcsProps } from "./layers/routesLayer";
 
 //routes processing
 import {
+  airportCount,
+  totalFlights,
   createRoutes,
   fetchRoutes,
-  airportCount,
-  loading,
-  totalFlights,
 } from "./processing/createRoutes";
+import { findAirCos } from "./processing/findCos";
 
 //covid processing
-import {
-  c19Keys,
-  CovidRenderLayer,
-  listOfC19Stats,
-} from "./layers/covidRenderLayer";
+import { CovidRenderLayer } from "./layers/covidRenderLayer";
 
 // import components for render
 import { LoadingAnimation } from "./components/loading";
@@ -48,13 +40,16 @@ import { SetMapBg } from "./components/mapStyle";
 import { FlightInfoBar } from "./components/flighInfoBar";
 import { C19Legend } from "./components/C19Legend";
 
+//call main function to load app
 export default function App() {
-  //flights
+  //flights data store
   const [isFlightData, setIsFlightData] = useState(null); // api results
   const [routesData, setRoutesData] = useState(null); // api results
-  const [newRoute, setNewRoute] = useState(null);
+  const [airportsValue, setAirportsValue] = useState(
+    "Select an incoming route"
+  ); //ex: London Gatwick
 
-  //covid
+  //covid data store
   const [c19Stat, setC19Stat] = useState("activePerOneMillion");
   const [c19Total, setC19Total] = useState("activePerOneMillion");
   const [currentC19List, setCurrentC19List] = useState({
@@ -68,7 +63,7 @@ export default function App() {
   const [showDeaths, setDeaths] = useState(false);
   const [showCases, setCases] = useState(false);
 
-  //map
+  //map data store
   const [showMenu, setshowMenu] = useState(true);
   const [mapStyle, setMapStyle] = useState(MAP_STYLE_STD);
   const [viewState, setViewState] = useState({
@@ -120,32 +115,32 @@ export default function App() {
     //these layers included directly for direct handling of clicks
     new IconLayer({
       ...airportIconLayerProps,
-      onClick: (d) => setNewRoute(d.object.name),
+      onClick: (d) => handleClicks(d.object.name),
     }),
     new TextLayer({
       ...airportTextLayerProps,
-      onClick: (d) => setNewRoute(d.object.name),
+      onClick: (d) => handleClicks(d.object.name),
     }),
   ];
 
   //handles click -routes
-  // async function handleChange2(airportVal) {
-  //   await buildDF(airportVal);
-  // }
+  async function handleClicks(airportVal) {
+    await buildDF(airportVal);
+  }
 
-  // async function buildDF(airportVal) {
-  //   setAirportsValue(airportVal);
-  //   // Routes;
-  //   let [fetch, flightChart] = await fetchRoutes(airportVal);
-  //   let simplifiedRoutes = await createRoutes(fetch, airportVal);
-  //   setRoutesData(simplifiedRoutes);
-  //   //build chart data
-  //   setIsFlightData(flightChart);
-  //   // get co-oridnates
-  //   let res2 = findAirCos(airportVal);
-  //   //move camera view
-  //   setViewState(res2);
-  // }
+  async function buildDF(airportVal) {
+    setAirportsValue(airportVal);
+    // Routes;
+    let [fetch, flightChart] = await fetchRoutes(airportVal);
+    let simplifiedRoutes = await createRoutes(fetch, airportVal);
+    setRoutesData(simplifiedRoutes);
+    //build chart data
+    setIsFlightData(flightChart);
+    // get co-oridnates
+    let res2 = findAirCos(airportVal);
+    //move camera view
+    setViewState(res2);
+  }
 
   const toggleMenu = () => setshowMenu(!showMenu);
 
@@ -172,6 +167,8 @@ export default function App() {
               setRoutesData={setRoutesData}
               setIsFlightData={setIsFlightData}
               setViewState={setViewState}
+              setAirportsValue={setAirportsValue}
+              airportsValue={airportsValue}
             />
             <CovidDropdown
               setActive1m={setActive1m}
