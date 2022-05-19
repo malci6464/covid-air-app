@@ -146,50 +146,59 @@ export default function App() {
 
   return (
     <div>
+      <div
+        className={styles.menuBar}
+        style={{ height: "50%", width: "100%", position: "relative" }}
+      >
+        <AppTitles />
+        <button className={styles.menuBtn} onClick={toggleMenu}>
+          Toggle menu
+        </button>
+        <div
+          style={{
+            display: showMenu ? "block" : "none",
+            overflow: "scroll",
+            zIndex: 999,
+            margin: 20,
+          }}
+        >
+          <RoutesDropdown
+            setRoutesData={setRoutesData}
+            setIsFlightData={setIsFlightData}
+            setViewState={setViewState}
+            setAirportsValue={setAirportsValue}
+            airportsValue={airportsValue}
+          />
+          <FlightInfoBar
+            totalFlights={totalFlights}
+            airportTotal={airportCount}
+          />
+          <CovidDropdown
+            setActive1m={setActive1m}
+            setDeaths1m={setDeaths1m}
+            setCases={setCases}
+            setDeaths={setDeaths}
+            setC19Stat={setC19Stat}
+            setC19Total={setC19Total}
+          />
+
+          <C19Legend c19Total={c19Total} currentC19List={currentC19List} />
+
+          <C19Btn c19Stat={c19Stat} />
+          <FlightChartBtn isFlightData={isFlightData} />
+          <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />
+
+          <LoadingAnimation />
+        </div>
+      </div>
       <DeckGL
+        style={{ height: "100vh", width: "100%", position: "relative" }}
         layers={[layers]}
         viewState={viewState}
         onViewStateChange={(e) => setViewState(e.viewState)}
         controller={true}
       >
         <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} />
-        <div className={styles.menuBar}>
-          <AppTitles />
-          <button className={styles.menuBtn} onClick={toggleMenu}>
-            Toggle menu
-          </button>
-          <div
-            style={{
-              display: showMenu ? "block" : "none",
-            }}
-          >
-            <RoutesDropdown
-              setRoutesData={setRoutesData}
-              setIsFlightData={setIsFlightData}
-              setViewState={setViewState}
-              setAirportsValue={setAirportsValue}
-              airportsValue={airportsValue}
-            />
-            <FlightInfoBar
-              totalFlights={totalFlights}
-              airportTotal={airportCount}
-            />
-            <CovidDropdown
-              setActive1m={setActive1m}
-              setDeaths1m={setDeaths1m}
-              setCases={setCases}
-              setDeaths={setDeaths}
-              setC19Stat={setC19Stat}
-              setC19Total={setC19Total}
-            />
-
-            <C19Legend c19Total={c19Total} currentC19List={currentC19List} />
-            <C19Btn c19Stat={c19Stat} />
-            <FlightChartBtn isFlightData={isFlightData} />
-            <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />
-          </div>
-          <LoadingAnimation />
-        </div>
       </DeckGL>
     </div>
   );

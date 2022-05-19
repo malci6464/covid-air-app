@@ -29,7 +29,7 @@ export function CovidDropdown({
   }
 
   return (
-    <form>
+    <form style={{ paddingBottom: "6px" }}>
       <label className={styles.def}>
         Select Covid-19 statistic
         <select value={covidValue} onChange={handleCovidChange}>

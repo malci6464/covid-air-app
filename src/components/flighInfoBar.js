@@ -3,7 +3,7 @@ import styles from "../buttons.module.css";
 
 export function FlightInfoBar(props) {
   return (
-    <p className={styles.def}>
+    <p className={styles.def} style={{ paddingBottom: "6px" }}>
       {props.totalFlights > 0
         ? "A total of " +
           props.totalFlights +

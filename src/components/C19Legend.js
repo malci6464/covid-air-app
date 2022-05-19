@@ -3,8 +3,10 @@ import styles from "../buttons.module.css";
 
 export function C19Legend(props) {
   return (
-    <>
-      <p className={styles.wrapper}>Covid-19 colour legend</p>
+    <div>
+      <p className={styles.wrapper} style={{ paddingBottom: "8px" }}>
+        Covid-19 colour legend
+      </p>
       <div className={styles.wrapper}>
         <span className={styles.progress}></span>
       </div>
@@ -22,6 +24,6 @@ export function C19Legend(props) {
           *** Unfortunately no data has been registered for today in Europe
         </p>
       </div>
-    </>
+    </div>
   );
 }

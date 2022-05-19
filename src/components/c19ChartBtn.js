@@ -13,8 +13,7 @@ export function C19Btn(props) {
       </button>
       <div
         style={{
-          maxWidth: 1400,
-          maxHeight: 800,
+          width: "100%",
           display: showHCcovid ? "block" : "none",
         }}
       >

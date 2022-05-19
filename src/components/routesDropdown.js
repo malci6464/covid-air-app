@@ -49,7 +49,7 @@ export function RoutesDropdown({
   }
 
   return (
-    <form style={{ paddingBottom: "4px" }}>
+    <form style={{ paddingBottom: "6px" }}>
       <label className={styles.def}>
         Pick an airport:
         <select value={airportsValue} onChange={handleChange}>

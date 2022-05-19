@@ -90,7 +90,7 @@
 .progress {
   display: block;
   height: 100%;
-  border-radius: 8px;
+  border-radius: 4px;
   background: rgb(82, 68, 68);
   background: linear-gradient(
     90deg,
