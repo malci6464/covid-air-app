@@ -38,7 +38,7 @@ import { CovidDropdown } from './components/covidDropdown';
 import { C19Btn } from './components/c19ChartBtn';
 import { FlightChartBtn } from './components/routesChartBtn';
 import { SetMapBg } from './components/mapStyle';
-import { FlightInfoBar } from './components/flighInfoBar';
+import { FlightInfoBar } from './components/flightInfoBar';
 import { C19Legend } from './components/C19Legend';
 
 //call main function to load app
