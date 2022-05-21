@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import styles from "../buttons.module.css";
-import { c19Keys, listOfC19Stats } from "../layers/covidRenderLayer";
+import React, { useState } from 'react';
+import styles from '../buttons.module.css';
+import { c19Keys, listOfC19Stats } from '../layers/covidRenderLayer';
 
 export function CovidDropdown({
   setActive1m,
@@ -10,7 +10,7 @@ export function CovidDropdown({
   setC19Stat,
   setC19Total,
 }) {
-  const [covidValue, setCovidValue] = useState("activePerOneMillion");
+  const [covidValue, setCovidValue] = useState('activePerOneMillion');
 
   function handleCovidChange(eventVal) {
     for (const [key, value] of Object.entries(listOfC19Stats)) {
@@ -19,27 +19,25 @@ export function CovidDropdown({
         setC19Stat(value); // for chart selector prop
         setC19Total(key);
         //set state for layers
-        key === "activePerOneMillion" ? setActive1m(true) : setActive1m(false);
-        key === "deathsPerOneMillion" ? setDeaths1m(true) : setDeaths1m(false);
-        key === "todayCases" ? setCases(true) : setCases(false);
-        key === "todayDeaths" ? setDeaths(true) : setDeaths(false);
+        key === 'activePerOneMillion' ? setActive1m(true) : setActive1m(false);
+        key === 'deathsPerOneMillion' ? setDeaths1m(true) : setDeaths1m(false);
+        key === 'todayCases' ? setCases(true) : setCases(false);
+        key === 'todayDeaths' ? setDeaths(true) : setDeaths(false);
         //props sent to single chart instance
       }
     }
   }
 
   return (
-    <form style={{ paddingBottom: "6px" }}>
-      <label className={styles.def}>
-        Select Covid-19 statistic
-        <select value={covidValue} onChange={handleCovidChange}>
-          {c19Keys.map((keyVal) => (
-            <option key={listOfC19Stats[keyVal]} value={listOfC19Stats[keyVal]}>
-              {listOfC19Stats[keyVal]}
-            </option>
-          ))}
-        </select>
-      </label>
+    <form style={{ paddingBottom: '6px' }}>
+      <div className={styles.def}>Select Covid-19 statistic</div>
+      <select value={covidValue} onChange={handleCovidChange}>
+        {c19Keys.map((keyVal) => (
+          <option key={listOfC19Stats[keyVal]} value={listOfC19Stats[keyVal]}>
+            {listOfC19Stats[keyVal]}
+          </option>
+        ))}
+      </select>
     </form>
   );
 }

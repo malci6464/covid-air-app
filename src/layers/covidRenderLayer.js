@@ -1,15 +1,16 @@
-import { GeoJsonLayer } from "@deck.gl/layers";
-import { scaleLinear } from "d3-scale";
-import { useState, useEffect } from "react";
-import euroGEO from "../dataFiles/europe.geojson";
-import { europeanCountries } from "../dataFiles/countryList";
+import { GeoJsonLayer } from '@deck.gl/layers';
+import { useState, useEffect } from 'react';
+import euroGEO from '../dataFiles/europe.geojson';
+import { europeanCountries } from '../dataFiles/countryList';
+
+//export let countryCount = 0;
 
 //use to build dropdown
 export let listOfC19Stats = {
-  activePerOneMillion: "Active cases per million",
-  deathsPerOneMillion: "Deaths per million",
-  todayCases: "Cases today",
-  todayDeaths: "Deaths today",
+  activePerOneMillion: 'Active cases per million',
+  deathsPerOneMillion: 'Deaths per million',
+  todayCases: 'Cases today',
+  todayDeaths: 'Deaths today',
 };
 
 // full list of other possible props to use
@@ -35,8 +36,8 @@ export let listOfC19Stats = {
 export const c19Keys = Object.keys(listOfC19Stats);
 
 //add all countries as param to api call endpoint
-let clist = "";
-europeanCountries.forEach((each) => (clist = clist + each + ","));
+let clist = '';
+europeanCountries.forEach((each) => (clist = clist + each + ','));
 // novel covid api base endpoint
 export const C19_base = `https://corona.lmao.ninja/v2/countries/${clist}?yesterday`;
 
@@ -100,6 +101,7 @@ export function CovidRenderLayer(
   }
 
   useEffect(() => {
+    //ensures call is made once
     if (dataApi === null) {
       fetch(C19_base)
         .then((resp) => resp.json())

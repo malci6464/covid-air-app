@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import styles from "../buttons.module.css";
-import airportCodes from "../dataFiles/airportsDF.json";
-import osloDemo from "../dataFiles/OSL.json";
+import React, { useState } from 'react';
+import styles from '../buttons.module.css';
+import airportCodes from '../dataFiles/airportsDF.json';
+import osloDemo from '../dataFiles/OSL.json';
 import {
   createRoutes,
   fetchRoutes,
   maxFlightCount,
   airportCount,
   loading,
-} from "../processing/createRoutes";
-import { findAirCos } from "../processing/findCos";
+} from '../processing/createRoutes';
+import { findAirCos } from '../processing/findCos';
 
 export function RoutesDropdown({
   setRoutesData,
@@ -29,7 +29,6 @@ export function RoutesDropdown({
     let [fetch, flightChart] = await fetchRoutes(airportVal);
     let simplifiedRoutes = await createRoutes(fetch, airportVal);
     setRoutesData(simplifiedRoutes);
-    // setRoutesData(osloDemo);
 
     //build chart data
     setIsFlightData(flightChart); //pass as prop to  flight chart
@@ -49,20 +48,18 @@ export function RoutesDropdown({
   }
 
   return (
-    <form style={{ paddingBottom: "6px" }}>
-      <label className={styles.def}>
-        Pick an airport:
-        <select value={airportsValue} onChange={handleChange}>
-          <option key={"test"} value={"Please select airport"}>
-            {"Please select airport"}
+    <form style={{ paddingBottom: '6px' }}>
+      <div className={styles.def}>Pick an airport:</div>
+      <select value={airportsValue} onChange={handleChange}>
+        <option key={'test'} value={'Please select airport'}>
+          {'Please select airport'}
+        </option>
+        {airportOptions.map((option) => (
+          <option key={option.label} value={option.value}>
+            {option.label}
           </option>
-          {airportOptions.map((option) => (
-            <option key={option.label} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
+        ))}
+      </select>
     </form>
   );
 }

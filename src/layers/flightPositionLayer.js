@@ -1,17 +1,18 @@
-import { useState, useEffect } from "react";
-import { ScenegraphLayer } from "@deck.gl/mesh-layers";
+import { useState, useEffect } from 'react';
+import { ScenegraphLayer } from '@deck.gl/mesh-layers';
 
-const DATA_URL_AIR = "https://opensky-network.org/api/states/all";
+const DATA_URL_AIR = 'https://opensky-network.org/api/states/all';
 const MODEL_URL =
-  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/scenegraph-layer/airplane.glb";
+  'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/scenegraph-layer/airplane.glb';
 const REFRESH_TIME = 10000;
 
 const ANIMATIONS = {
-  "*": { speed: 1 },
+  '*': { speed: 1 },
 };
 
 export let apiLoading = false;
 
+//possible response data from api per flight
 export const DATA_INDEX = {
   UNIQUE_ID: 0,
   CALL_SIGN: 1,
@@ -57,8 +58,7 @@ export function FlightPositionLayer() {
       .then((resp) => {
         if (resp && resp.states && timer.id !== null) {
           // In order to keep the animation smooth we need to always return the same
-          // objects in the exact same order. This function will discard new objects
-          // and only update existing ones.
+          // objects in the exact same order
           let sortedData = resp.states;
           //filter for europe
           let filterres = sortedData.filter(
@@ -69,10 +69,13 @@ export function FlightPositionLayer() {
               ]) === true
           );
           if (data) {
+            // reformat
             const dataAsObj = {};
+            //create values lookup
             filterres.forEach(
               (entry) => (dataAsObj[entry[DATA_INDEX.UNIQUE_ID]] = entry)
             );
+            //define ordering
             filterres = data.map(
               (entry) => dataAsObj[entry[DATA_INDEX.UNIQUE_ID]] || entry
             );
@@ -82,6 +85,7 @@ export function FlightPositionLayer() {
         }
       })
       .finally(() => {
+        //call the api again
         timer.nextTimeoutId = setTimeout(
           () => setTimer({ id: timer.nextTimeoutId }),
           REFRESH_TIME
@@ -97,7 +101,7 @@ export function FlightPositionLayer() {
   }, [timer]);
 
   const flightLayerProps = new ScenegraphLayer({
-    id: "scenegraph-layer",
+    id: 'scenegraph-layer',
     data: data,
     pickable: true,
     sizeScale: 35,
@@ -116,7 +120,7 @@ export function FlightPositionLayer() {
       90,
     ],
     transitions: {
-      getPosition: 5000, //REFRESH_TIME * 0.9,
+      getPosition: 10000,
     },
   });
   return flightLayerProps;

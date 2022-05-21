@@ -4,6 +4,8 @@ import HighchartsReact from 'highcharts-react-official';
 import React, { useState, useEffect } from 'react';
 import { C19_base } from './covidRenderLayer';
 
+export let currDF = null;
+
 export function CovidChart(props) {
   let deathsArr = [];
   let casesArr = [];
@@ -44,21 +46,32 @@ export function CovidChart(props) {
     }
   });
 
+  function createDF(numbs, labelset) {
+    let df = [];
+    // assume & required ordering of each
+    numbs.forEach((each, ind) => df.push([labelset[ind], each]));
+    currDF = df;
+  }
+
   //select correct dataframe
   function getData() {
     if (props.caseType === 'Cases today') {
+      createDF(cases, labels);
       return cases;
     }
     if (props.caseType === 'Deaths today') {
+      createDF(deaths, labels);
       return deaths;
     }
     if (
       props.caseType === 'activePerOneMillion' ||
       props.caseType === 'Active cases per million'
     ) {
+      createDF(cases1m, labels);
       return cases1m;
     }
     if (props.caseType === 'Deaths per million') {
+      createDF(deaths1m, labels);
       return deaths1m;
     }
   }

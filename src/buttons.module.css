@@ -113,6 +113,13 @@
   padding-right: 20px;
   overflow: scroll;
   z-index: 999;
+  margin-top: 20px;
+}
+
+.flexCustom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .controls {

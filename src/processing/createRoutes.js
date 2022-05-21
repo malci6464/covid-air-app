@@ -1,5 +1,5 @@
-import { scaleThreshold } from "d3-scale";
-import airportCodes from "../dataFiles/airportsDF.json";
+import { scaleThreshold } from 'd3-scale';
+import airportCodes from '../dataFiles/airportsDF.json';
 
 export let totalFlights = 0;
 export let airportCount = 0;
@@ -8,6 +8,11 @@ export let currentCoordinates = [];
 //route counts per airport - multiple objects/vals
 export let currentFlightCount = {};
 export let loading = false;
+export let apiDelay = false;
+
+setTimeout(() => {
+  loading ? (apiDelay = true) : (apiDelay = false);
+}, '10000');
 
 export async function createRoutes(res, selectedAirport) {
   let simplifiedRoutes = [];
@@ -25,7 +30,7 @@ export async function createRoutes(res, selectedAirport) {
             coordinates: findAirportCoordinates(selectedAirport),
           },
         })
-      : ""
+      : ''
   );
   // (each.count = currentFlightCount[each.from.name].count)
   await simplifiedRoutes.map((each) =>
@@ -95,7 +100,7 @@ function findAirportCoordinates(input) {
   //consider more than one match? - overwrite as failsafe
   let cos;
   airportCodes.map((each) =>
-    each.ident === input ? (cos = each.coordinates) : ""
+    each.ident === input ? (cos = each.coordinates) : ''
   );
   if (cos !== undefined) {
     let parsedCord = convertCoordinates(cos);
@@ -105,7 +110,7 @@ function findAirportCoordinates(input) {
 }
 
 function convertCoordinates(inputEl) {
-  let cos2 = inputEl.split(",");
+  let cos2 = inputEl.split(',');
   let long = parseFloat(cos2[0]);
   let lat = parseFloat(cos2[1]);
   return [long, lat];

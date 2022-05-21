@@ -35,6 +35,7 @@ import { AppTitles } from './components/titles';
 import { RoutesDropdown } from './components/routesDropdown';
 import { CovidDropdown } from './components/covidDropdown';
 import { C19Btn } from './components/c19ChartBtn';
+import { currDF } from './layers/covidChart';
 import { FlightChartBtn } from './components/routesChartBtn';
 import { SetMapBg } from './components/mapStyle';
 import { FlightInfoBar } from './components/flighInfoBar';
@@ -58,6 +59,7 @@ export default function App() {
     todayCases: 0,
     todayDeaths: 0,
   });
+  //show hide data
   const [showActive1m, setActive1m] = useState(true);
   const [showDeaths1m, setDeaths1m] = useState(false);
   const [showDeaths, setDeaths] = useState(false);
@@ -147,9 +149,12 @@ export default function App() {
   function getTooltip({ object }) {
     // return null if no matching valid objects to avoid crashing the app
     if (object) {
+      //if airport icon or text object
       if (object.label) {
         return object && object.label;
-      } else if (object[DATA_INDEX.CALL_SIGN]) {
+      }
+      //if a live flight
+      else if (object[DATA_INDEX.CALL_SIGN]) {
         return (
           object &&
           `\
@@ -158,6 +163,17 @@ export default function App() {
         Vertical Rate: ${object[DATA_INDEX.VERTICAL_RATE] || 0} m/s
         Velocity: ${object[DATA_INDEX.VELOCITY] || 0} m/s
         Direction: ${object[DATA_INDEX.TRUE_TRACK] || 0}`
+        );
+      } //if a country covid layer
+      else if (object.properties.NAME && object.properties.POP2005) {
+        //import currdf from chart api call
+        let cases = currDF.filter((each) => each[0] === object.properties.NAME);
+        return (
+          object &&
+          `\
+          ${object.properties.NAME} 
+            Population: ${object.properties.POP2005} 
+            ${cases} cases (${c19Stat})`
         );
       } else if (object.properties.NAME) {
         return object && object.properties.NAME;
@@ -225,7 +241,7 @@ export default function App() {
 
         <LoadingAnimation />
       </div>
-      <div className={styles.controls}>Hold ctrl+drag for 3d</div>
+      <div className={styles.controls}>Hold ctrl/cmd + drag for 3d view</div>
 
       <DeckGL
         style={{ height: '100vh', width: '100%', position: 'relative' }}
