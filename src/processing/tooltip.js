@@ -28,14 +28,25 @@ export function getTooltip({ object }) {
       let airportName = airportCodes.filter(
         (each) => each.ident === object.from.name
       );
-      let airport = airportName[0].name;
-      return (
-        object &&
-        `\
+      if (airportName.length > 0) {
+        let airport = airportName[0].hasOwnProperty('name')
+          ? airportName[0].name
+          : airportName[0].ident;
+        return (
+          object &&
+          `\
         ${object.count} flights incoming
         from ${airport} in the 
         previous 7 days`
-      );
+        );
+      } else {
+        return (
+          object &&
+          `\
+          ${object.count} flights incoming
+          from in the previous 7 days`
+        );
+      }
     }
     //if a country covid layer
     else if (
@@ -53,10 +64,8 @@ export function getTooltip({ object }) {
           Population: ${object.properties.POP2005}
           ${cases} cases - ${titleTooltip}`
       );
-    } else if (object.properties.NAME === undefined) {
-      return object;
     } else {
-      return null;
+      return object;
     }
   }
 }
