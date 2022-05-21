@@ -1,8 +1,8 @@
 //charts
-import Highcharts from "highcharts";
-import HighchartsReact from "highcharts-react-official";
-import React, { useState, useEffect } from "react";
-import { C19_base } from "./covidRenderLayer";
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+import React, { useState, useEffect } from 'react';
+import { C19_base } from './covidRenderLayer';
 
 export function CovidChart(props) {
   let deathsArr = [];
@@ -46,31 +46,19 @@ export function CovidChart(props) {
 
   //select correct dataframe
   function getData() {
-    if (props.caseType === "Cases today") {
-      // let c19max = Math.max(...cases);
-      // console.log(c19max);
-      // setCurrentC19MaxCall(c19max);
+    if (props.caseType === 'Cases today') {
       return cases;
     }
-    if (props.caseType === "Deaths today") {
-      // let c19max = Math.max(deaths);
-      // console.log(c19max);
-      // setCurrentC19MaxCall(...c19max);
+    if (props.caseType === 'Deaths today') {
       return deaths;
     }
     if (
-      props.caseType === "activePerOneMillion" ||
-      props.caseType === "Active cases per million"
+      props.caseType === 'activePerOneMillion' ||
+      props.caseType === 'Active cases per million'
     ) {
-      // let c19max = Math.max(cases1m);
-      // console.log(cases1m);
-      // setCurrentC19MaxCall(...c19max);
       return cases1m;
     }
-    if (props.caseType === "Deaths per million") {
-      // let c19max = Math.max(...deaths1m);
-      // console.log(c19max);
-      // setCurrentC19MaxCall(...c19max);
+    if (props.caseType === 'Deaths per million') {
       return deaths1m;
     }
   }
@@ -78,7 +66,7 @@ export function CovidChart(props) {
   //highlight with colour and re-order potentially
   const options = {
     title: {
-      text: "Covid Data",
+      text: 'Covid Data',
     },
     yAxis: {
       title: {
@@ -97,7 +85,7 @@ export function CovidChart(props) {
         },
       },
     },
-    series: [{ type: "column", data: getData() }],
+    series: [{ type: 'column', data: getData() }],
   };
 
   return <HighchartsReact highcharts={Highcharts} options={options} />;

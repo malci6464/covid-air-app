@@ -101,10 +101,31 @@
   animation-fill-mode: both;
 }
 
-.flex {
-  display: flex;
-  width: 300px;
-  padding: 4px;
-  padding-top: 0px;
+@media only screen and (max-width: 600px) {
+  .mobile {
+    flex-direction: column;
+  }
+}
+
+.mobile {
   justify-content: space-between;
+  margin-left: 20px;
+  padding-right: 20px;
+  overflow: scroll;
+  z-index: 999;
+}
+
+.controls {
+  position: absolute;
+  bottom: 0;
+  z-index: 999;
+  background: white;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+@media only screen and (max-width: 400px) {
+  .controls {
+    display: none;
+  }
 }
