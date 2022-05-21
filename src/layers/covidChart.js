@@ -4,7 +4,8 @@ import HighchartsReact from 'highcharts-react-official';
 import React, { useState, useEffect } from 'react';
 import { C19_base } from './covidRenderLayer';
 
-export let currDF = null;
+export let currDFTooltip = null;
+export let titleTooltip = null;
 
 export function CovidChart(props) {
   let deathsArr = [];
@@ -47,19 +48,21 @@ export function CovidChart(props) {
   });
 
   function createDF(numbs, labelset) {
+    // assume & required ordering of each for tooltip
     let df = [];
-    // assume & required ordering of each
     numbs.forEach((each, ind) => df.push([labelset[ind], each]));
-    currDF = df;
+    currDFTooltip = df;
   }
 
   //select correct dataframe
   function getData() {
     if (props.caseType === 'Cases today') {
       createDF(cases, labels);
+      titleTooltip = props.caseType;
       return cases;
     }
     if (props.caseType === 'Deaths today') {
+      titleTooltip = props.caseType;
       createDF(deaths, labels);
       return deaths;
     }
@@ -68,10 +71,12 @@ export function CovidChart(props) {
       props.caseType === 'Active cases per million'
     ) {
       createDF(cases1m, labels);
+      titleTooltip = props.caseType;
       return cases1m;
     }
     if (props.caseType === 'Deaths per million') {
       createDF(deaths1m, labels);
+      titleTooltip = props.caseType;
       return deaths1m;
     }
   }

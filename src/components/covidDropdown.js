@@ -16,8 +16,8 @@ export function CovidDropdown({
     for (const [key, value] of Object.entries(listOfC19Stats)) {
       if (value === eventVal.target.value) {
         setCovidValue(value); //set current selected for dropdwon
-        setC19Stat(value); // for chart selector prop
-        setC19Total(key);
+        setC19Stat(value); // for chart selector prop - pretty printed
+        setC19Total(key); // prop vlaue for use in funcs
         //set state for layers
         key === 'activePerOneMillion' ? setActive1m(true) : setActive1m(false);
         key === 'deathsPerOneMillion' ? setDeaths1m(true) : setDeaths1m(false);

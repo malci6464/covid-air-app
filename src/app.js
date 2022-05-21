@@ -12,7 +12,7 @@ import { MAP_STYLE_STD } from './dataFiles/mapStyles';
 import styles from './buttons.module.css';
 
 //layers
-import { FlightPositionLayer, DATA_INDEX } from './layers/flightPositionLayer';
+import { FlightPositionLayer } from './layers/flightPositionLayer';
 import { airportIconLayerProps } from './layers/airportIconLayer';
 import { airportTextLayerProps } from './layers/airportTextLayer';
 import { flightArcsProps } from './layers/routesLayer';
@@ -28,6 +28,7 @@ import { findAirCos } from './processing/findCos';
 
 //covid processing
 import { CovidRenderLayer } from './layers/covidRenderLayer';
+import { getTooltip } from './processing/tooltip';
 
 // import components for render
 import { LoadingAnimation } from './components/loading';
@@ -35,7 +36,6 @@ import { AppTitles } from './components/titles';
 import { RoutesDropdown } from './components/routesDropdown';
 import { CovidDropdown } from './components/covidDropdown';
 import { C19Btn } from './components/c19ChartBtn';
-import { currDF } from './layers/covidChart';
 import { FlightChartBtn } from './components/routesChartBtn';
 import { SetMapBg } from './components/mapStyle';
 import { FlightInfoBar } from './components/flighInfoBar';
@@ -78,38 +78,12 @@ export default function App() {
   }); //camera data
 
   const layers = [
-    //scengraph todo - filterout non europe, filter 0,0 clkump of flights
     FlightPositionLayer(),
     // hardcoded to enable layer selction - using visible  deck.gl layer prop
-    // format layer(data prop, visible bool, unique id, max list states)
-    CovidRenderLayer(
-      'activePerOneMillion',
-      showActive1m,
-      'activePerOneMillion',
-      setCurrentC19List,
-      currentC19List
-    ),
-    CovidRenderLayer(
-      'deathsPerOneMillion',
-      showDeaths1m,
-      'deathsPerOneMillion',
-      setCurrentC19List,
-      currentC19List
-    ),
-    CovidRenderLayer(
-      'todayCases',
-      showCases,
-      'todayCases',
-      setCurrentC19List,
-      currentC19List
-    ),
-    CovidRenderLayer(
-      'todayDeaths',
-      showDeaths,
-      'todayDeaths',
-      setCurrentC19List,
-      currentC19List
-    ),
+    CovidRenderLayer('activePerOneMillion', showActive1m, setCurrentC19List),
+    CovidRenderLayer('deathsPerOneMillion', showDeaths1m, setCurrentC19List),
+    CovidRenderLayer('todayCases', showCases, setCurrentC19List),
+    CovidRenderLayer('todayDeaths', showDeaths, setCurrentC19List),
     new ArcLayer({
       ...flightArcsProps,
       data: routesData,
@@ -127,10 +101,6 @@ export default function App() {
 
   //handles click -routes
   async function handleClicks(airportVal) {
-    await buildDF(airportVal);
-  }
-
-  async function buildDF(airportVal) {
     setAirportsValue(airportVal);
     // Routes;
     let [fetch, flightChart] = await fetchRoutes(airportVal);
@@ -145,43 +115,6 @@ export default function App() {
   }
 
   const toggleMenu = () => setshowMenu(!showMenu);
-
-  function getTooltip({ object }) {
-    // return null if no matching valid objects to avoid crashing the app
-    if (object) {
-      //if airport icon or text object
-      if (object.label) {
-        return object && object.label;
-      }
-      //if a live flight
-      else if (object[DATA_INDEX.CALL_SIGN]) {
-        return (
-          object &&
-          `\
-        Call Sign: ${object[DATA_INDEX.CALL_SIGN] || ''}
-        Country of origin: ${object[DATA_INDEX.ORIGIN_COUNTRY] || ''}
-        Vertical Rate: ${object[DATA_INDEX.VERTICAL_RATE] || 0} m/s
-        Velocity: ${object[DATA_INDEX.VELOCITY] || 0} m/s
-        Direction: ${object[DATA_INDEX.TRUE_TRACK] || 0}`
-        );
-      } //if a country covid layer
-      else if (object.properties.NAME && object.properties.POP2005) {
-        //import currdf from chart api call
-        let cases = currDF.filter((each) => each[0] === object.properties.NAME);
-        return (
-          object &&
-          `\
-          ${object.properties.NAME} 
-            Population: ${object.properties.POP2005} 
-            ${cases} cases (${c19Stat})`
-        );
-      } else if (object.properties.NAME) {
-        return object && object.properties.NAME;
-      } else {
-        return null;
-      }
-    }
-  }
 
   return (
     <div>
@@ -232,7 +165,12 @@ export default function App() {
               setC19Total={setC19Total}
             />
 
-            <C19Legend c19Total={c19Total} currentC19List={currentC19List} />
+            <C19Legend
+              c19Total={c19Total}
+              currentC19List={
+                currentC19List !== undefined ? currentC19List : ''
+              }
+            />
           </div>
         </div>
         <C19Btn c19Stat={c19Stat} />

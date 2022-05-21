@@ -41,90 +41,105 @@ europeanCountries.forEach((each) => (clist = clist + each + ','));
 // novel covid api base endpoint
 export const C19_base = `https://corona.lmao.ninja/v2/countries/${clist}?yesterday`;
 
-export function CovidRenderLayer(
-  props,
-  show,
-  newId,
-  setCurrentC19List,
-  currentC19List
-) {
+export function CovidRenderLayer(dataProp, show, setCurrentC19List) {
+  //contains all state
   const [dataApi, setDataApi] = useState(null);
+  const [resData, setResData] = useState(null);
 
-  //definitions for colour scaling
-  let c19max = 10000; //raw default
-  let c19min = 0; //not updated
+  //contains max object
+  const [maxC19, setMaxC19] = useState();
 
-  function getMax(data) {
-    const amounts = data.map((each) => each[props]);
-    c19max = Math.max(...amounts);
-    updateMaxList(c19max);
-  }
+  //local vars
+  let todayDeathsMax = 0;
+  let todayCasesMax = 0;
+  let activePerOneMillionMax = 0;
+  let deathsPerOneMillionMax = 0;
 
-  async function updateMaxList(max) {
-    let listCopy = currentC19List;
-    listCopy[props] = max;
-    setCurrentC19List(listCopy);
-  }
-
-  // find country and assign RGB dependent on case count
-  async function getCountryId(caseType, data) {
-    await data.map((each) => (each.fillC = getColour(each[caseType])));
-    setDataApi(data);
-  }
-
-  function getColour(cases) {
-    //todo - make dyncamic - and reinstate max
-    let col = (cases / c19max) * 255;
-    if (col > 255) {
-      col = 255;
+  function defineMax(elem) {
+    if (elem.todayDeaths > todayDeathsMax) {
+      todayDeathsMax = elem.todayDeaths;
     }
-    let colour = [Math.round(col), 0, 0];
-    return colour;
-  }
-  // find country and assign RGB dependent on case count
-  function getCountryId2(val, caseType) {
-    let res = dataApi.filter((each) => each.country === val.properties.NAME);
-
-    if (res.length > 0) {
-      //todo - make dyncamic - and reinstate max
-      let country = res[0][caseType];
-      let col = (country / c19max) * 255;
-      if (col > 255) {
-        col = 255;
-      }
-      let colour = [Math.round(col), 0, 0];
-      return colour;
-    } else {
-      //null colour
-      return [0, 0, 0];
+    if (elem.todayCases > todayCasesMax) {
+      todayCasesMax = elem.todayCases;
     }
+    if (elem.activePerOneMillion > activePerOneMillionMax) {
+      activePerOneMillionMax = elem.activePerOneMillion;
+    }
+    if (elem.deathsPerOneMillion > deathsPerOneMillionMax) {
+      deathsPerOneMillionMax = elem.deathsPerOneMillion;
+    }
+  }
+
+  async function build(apiResponse) {
+    let masterdf = [];
+    apiResponse.forEach((element) => {
+      masterdf.push({
+        country: element.country,
+        todayDeaths: element.todayDeaths,
+        todayCases: element.todayCases,
+        activePerOneMillion: element.activePerOneMillion,
+        deathsPerOneMillion: element.deathsPerOneMillion,
+      });
+      //create max
+      defineMax(element);
+    });
+
+    // return
+    setDataApi(masterdf);
+    setMaxC19({
+      todayDeathsMax: todayDeathsMax,
+      todayCasesMax: todayCasesMax,
+      activePerOneMillionMax: activePerOneMillionMax,
+      deathsPerOneMillionMax: deathsPerOneMillionMax,
+    });
+    // callback for max list to be used in legend
+    setCurrentC19List(maxC19);
   }
 
   useEffect(() => {
     //ensures call is made once
-    if (dataApi === null) {
+    if (resData === null) {
       fetch(C19_base)
         .then((resp) => resp.json())
         .then((resp) => {
           if (resp !== null) {
-            //console.log(resp);
-            setDataApi(resp);
-            getMax(resp);
-            getCountryId(props, resp);
+            build(resp);
+            setResData(resp);
           }
         });
     }
   });
 
+  // find country and assign RGB dependent on case count
+  function getCountryId(val) {
+    // // //val props name comes from geo json file - country comes from api response
+    let res = dataApi.filter((each) => each.country === val.properties.NAME);
+    if (res.length > 0) {
+      //todo - make dyncamic - and reinstate max
+      let countryTotal = res[0][dataProp]; //unwrap from array
+
+      let maxProp = maxC19[`${dataProp}Max`]; //shortcut - append max to prop value
+      let col = (countryTotal / maxProp) * 255;
+      if (col > 255) {
+        console.log('max eceeded', col);
+        col = 255;
+      }
+      let colour = [Math.round(col), 0, 0];
+      return colour;
+    } else {
+      return [0, 0, 0];
+    }
+  }
+
   const geoLayer = new GeoJsonLayer({
-    id: newId,
+    id: dataProp,
     data: euroGEO,
     opacity: 0.4,
     stroked: false,
     filled: true,
     extruded: true,
     wireframe: true,
-    getFillColor: (f) => getCountryId2(f, props), //colour defined by covid levels
+    getFillColor: (f) => getCountryId(f), //colour defined by covid levels
     getLineColor: [255, 255, 255],
     getPolygonOffset: (f) => [222, 22],
     pickable: true,

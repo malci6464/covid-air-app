@@ -52,7 +52,10 @@ export function FlightPositionLayer() {
   }
 
   useEffect(() => {
-    apiLoading = true;
+    if (data === null) {
+      //only show spinner on first load
+      apiLoading = true;
+    }
     fetch(DATA_URL_AIR)
       .then((resp) => resp.json())
       .then((resp) => {
