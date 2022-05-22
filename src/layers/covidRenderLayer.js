@@ -4,37 +4,27 @@ import euroGEO from '../dataFiles/europe.geojson';
 import { europeanCountries } from '../dataFiles/countryList';
 import c19mock from '../dataFiles/covidResponse.json';
 
-//export let countryCount = 0;
-
-//use to build dropdown
-export let listOfC19Stats = {
+// full list of other possible props to use
+export let listOfC19StatsFull = {
+  active: 'Active cases',
   activePerOneMillion: 'Active cases per million',
+  cases: 'Cumulative cases',
+  casesPerOneMillion: 'Cumulative per million',
+  critical: 'Currently critical',
+  criticalPerOneMillion: 'Critical per million',
+  deaths: 'Cumulative deaths',
   deathsPerOneMillion: 'Deaths per million',
+  recovered: 'Recovered cases',
+  recoveredPerOneMillion: 'Recovered cases per million',
+  tests: 'Tests taken total',
+  testsPerOneMillion: 'Tests taken per million',
   todayCases: 'Cases today',
   todayDeaths: 'Deaths today',
+  todayRecovered: 'Recovered today',
 };
 
-// full list of other possible props to use
-// let listOfC19StatsFull = {
-//   active: "Active cases",
-//   activePerOneMillion: "Active cases per million",
-//   cases: "Cumulative cases",
-//   casesPerOneMillion: "Cumulative per million",
-//   critical: "Currently critical",
-//   criticalPerOneMillion: "Critical per million",
-//   deaths: "Cumulative deaths",
-//   deathsPerOneMillion: "Deaths per million",
-//   recovered: "Recovered cases",
-//   recoveredPerOneMillion: "Recovered cases per million",
-//   tests: "Tests taken total",
-//   testsPerOneMillion: "Tests taken per million",
-//   todayCases: "Cases today",
-//   todayDeaths: "Deaths today",
-//   todayRecovered: "Recovered today",
-// };
-
 //used for easy parsing of object
-export const c19Keys = Object.keys(listOfC19Stats);
+export const c19KeysFull = Object.keys(listOfC19StatsFull);
 
 //add all countries as param to api call endpoint
 let clist = '';
