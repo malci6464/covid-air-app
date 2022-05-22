@@ -6,21 +6,21 @@ export function C19Btn(props) {
   const [showHCcovid, setshowHCcovid] = useState(false);
   const handleshowHCcovid = () => setshowHCcovid(!showHCcovid);
 
-  return (
-    <>
-      <button className={styles.btn} onClick={handleshowHCcovid}>
-        Covid Chart
-      </button>
-      <div
-        style={{
-          width: '100%',
-          display: showHCcovid ? 'block' : 'none',
-        }}
-      >
-        <CovidChart
-          caseType={props.c19Stat}
-        />
-      </div>
-    </>
-  );
+  if (props.globalDF) {
+    return (
+      <>
+        <button className={styles.btn} onClick={handleshowHCcovid}>
+          Covid Chart
+        </button>
+        <div
+          style={{
+            width: '100%',
+            display: showHCcovid ? 'block' : 'none',
+          }}
+        >
+          <CovidChart caseType={props.c19Stat} globalDF={props.globalDF} />
+        </div>
+      </>
+    );
+  }
 }

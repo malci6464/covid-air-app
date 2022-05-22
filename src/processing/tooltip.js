@@ -1,5 +1,5 @@
 import { DATA_INDEX } from '../layers/flightPositionLayer';
-import { currDFTooltip, titleTooltip } from '../layers/covidChart';
+import { currDFTooltip, caseType } from '../layers/covidChart';
 import airportCodes from '../dataFiles/airportsDF.json';
 
 export function getTooltip({ object }) {
@@ -53,17 +53,31 @@ export function getTooltip({ object }) {
       object.properties.NAME !== undefined &&
       object.properties.POP2005 !== undefined
     ) {
-      //import currdf from chart api call
-      let cases = currDFTooltip.filter(
-        (each) => each[0] === object.properties.NAME
+      // import currdf from chart api call
+      let cases;
+
+      cases = currDFTooltip.filter(
+        (each) => each.country === object.properties.NAME
       );
-      return (
-        object &&
-        `\
+      if (cases.length > 0) {
+        cases = cases[0];
+        return (
+          object &&
+          `\
+          ${object.properties.NAME}
+            Population: ${object.properties.POP2005}
+            ${cases.cases} cases (${caseType})
+            `
+        );
+      } else {
+        return (
+          object &&
+          `\
         ${object.properties.NAME}
-          Population: ${object.properties.POP2005}
-          ${cases} cases - ${titleTooltip}`
-      );
+          Population: ${object.properties.POP2005} 
+          `
+        );
+      }
     } else {
       return object;
     }

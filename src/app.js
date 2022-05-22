@@ -51,23 +51,14 @@ export default function App() {
   ); //ex: London Gatwick
 
   //covid data store
-  const [c19Stat, setC19Stat] = useState('activePerOneMillion');
-  const [c19Total, setC19Total] = useState('activePerOneMillion');
-  const [currentC19List, setCurrentC19List] = useState({
-    activePerOneMillion: 0,
-    deathsPerOneMillion: 0,
-    todayCases: 0,
-    todayDeaths: 0,
-  });
-  //show hide data
-  const [showActive1m, setActive1m] = useState(true);
-  const [showDeaths1m, setDeaths1m] = useState(false);
-  const [showDeaths, setDeaths] = useState(false);
-  const [showCases, setCases] = useState(false);
+  const [c19Stat, setC19Stat] = useState('active cases per milliom'); //init
+  const [c19prop, setC19prop] = useState('activePerOneMillion'); //init
+  const [currentC19Max, setCurrentC19Max] = useState({});
+  const [globalDF, setGlobalDF] = useState();
 
   //map data store
   const [showMenu, setshowMenu] = useState(true);
-  const [mapStyle, setMapStyle] = useState(MAP_STYLE_STD);
+  const [mapStyle, setMapStyle] = useState(MAP_STYLE_STD); //init
   const [viewState, setViewState] = useState({
     longitude: 10,
     latitude: 59,
@@ -79,11 +70,7 @@ export default function App() {
 
   const layers = [
     FlightPositionLayer(),
-    // hardcoded to enable layer selction - using visible  deck.gl layer prop
-    CovidRenderLayer('activePerOneMillion', showActive1m, setCurrentC19List),
-    CovidRenderLayer('deathsPerOneMillion', showDeaths1m, setCurrentC19List),
-    CovidRenderLayer('todayCases', showCases, setCurrentC19List),
-    CovidRenderLayer('todayDeaths', showDeaths, setCurrentC19List),
+    CovidRenderLayer(c19prop, setCurrentC19Max, setGlobalDF),
     new ArcLayer({
       ...flightArcsProps,
       data: routesData,
@@ -156,24 +143,12 @@ export default function App() {
               flexDirection: 'column',
             }}
           >
-            <CovidDropdown
-              setActive1m={setActive1m}
-              setDeaths1m={setDeaths1m}
-              setCases={setCases}
-              setDeaths={setDeaths}
-              setC19Stat={setC19Stat}
-              setC19Total={setC19Total}
-            />
+            <CovidDropdown setC19Stat={setC19Stat} setC19prop={setC19prop} />
 
-            <C19Legend
-              c19Total={c19Total}
-              currentC19List={
-                currentC19List !== undefined ? currentC19List : ''
-              }
-            />
+            <C19Legend currentC19Max={currentC19Max > 0 ? currentC19Max : ''} />
           </div>
         </div>
-        <C19Btn c19Stat={c19Stat} />
+        <C19Btn c19Stat={c19Stat} globalDF={globalDF} />
         <FlightChartBtn isFlightData={isFlightData} />
         <SetMapBg setMapStyle={setMapStyle} currentMap={mapStyle} />
 
